@@ -55,7 +55,7 @@ A full-featured transport management system with real-time tracking, booking, pa
 
 #### 1. Clone the repository
 ```bash
-git clone (https://github.com/Alemu-chamada/Transportation-Management-System)
+git clone https://github.com/Alemu-chamada/Transportation-Management-System
 cd tms
 ```
 
