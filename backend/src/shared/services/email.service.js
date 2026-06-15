@@ -12,11 +12,16 @@ const initializeTransporter = () => {
 
   try {
     transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use TLS
       auth: {
         user: env.emailUser,
         pass: env.emailPass,
       },
+      tls: {
+        rejectUnauthorized: false
+      }
     });
 
     logger.info("Email transporter initialized successfully");
