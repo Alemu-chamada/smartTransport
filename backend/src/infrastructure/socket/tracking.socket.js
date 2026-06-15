@@ -4,6 +4,7 @@ const { verifyAccessToken } = require("../../shared/utils/jwt.js");
 const logger = require("../../shared/utils/logger.js");
 const userService = require("../../modules/user/services/user.service.js");
 const trackingService = require("../../modules/tracking/services/tracking.service.js");
+const env = require("../../config/env.js");
 
 const getSocketToken = (socket) => {
   const authToken = socket.handshake.auth && socket.handshake.auth.token;
@@ -38,10 +39,24 @@ const authenticateSocket = async (socket, next) => {
 };
 
 const initializeTrackingSocket = (httpServer) => {
+  // Get allowed origins from environment
+  const allowedOrigins = env.allowedOrigins.split(',').map(origin => origin.trim());
+  
   const io = new Server(httpServer, {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
+      origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, testing tools)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          logger.warn(`Socket.IO CORS blocked connection from origin: ${origin}`);
+          callback(new Error(`Origin ${origin} not allowed by Socket.IO CORS`));
+        }
+      },
+      methods: ["GET", "POST"],
+      credentials: true
     }
   });
 

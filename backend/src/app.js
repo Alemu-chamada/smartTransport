@@ -4,15 +4,32 @@ const helmet = require("helmet");
 const routes = require("./routes");
 const errorMiddleware = require("./shared/middleware/error.middleware.js");
 const logger = require("./shared/utils/logger.js");
-
+const env = require("./config/env.js");
 
 const app = express();
 
-// Configure CORS
+// Configure CORS with environment-based origins
+const allowedOrigins = env.allowedOrigins.split(',').map(origin => origin.trim());
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176'],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      logger.warn(`CORS blocked request from origin: ${origin}`);
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Configure Helmet with relaxed CSP for development
 app.use(helmet({
