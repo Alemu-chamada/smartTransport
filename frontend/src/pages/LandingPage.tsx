@@ -399,15 +399,15 @@ export function LandingPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-gray-400">
                   <Mail className="h-5 w-5" />
-                  <span>hello@tms.com</span>
+                  <a href="mailto:smarttransportserv@gmail.com" className="hover:text-white transition-colors">smarttransportserv@gmail.com</a>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400">
                   <Phone className="h-5 w-5" />
-                  <span>+1 (555) 123-4567</span>
+                  <a href="tel:+251992738116" className="hover:text-white transition-colors">+251 99 273 8116</a>
                 </div>
                 <div className="flex items-start gap-3 text-gray-400">
                   <Map className="h-5 w-5 mt-1" />
-                  <span>123 Transportation Ave, NY 10001</span>
+                  <span>Developer: Alemu Chamada</span>
                 </div>
               </div>
             </div>
@@ -421,7 +421,7 @@ export function LandingPage() {
 
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-gray-400">© 2024 TMS. All rights reserved.</p>
+              <p className="text-gray-400">© 2026 Smart Transport System · Built by Alemu Chamada</p>
               <div className="flex gap-6">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>

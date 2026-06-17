@@ -13,6 +13,22 @@ export interface SystemHealthData {
   redis: boolean;
 }
 
+export interface Bus {
+  id: string;
+  plate_number: string;
+  capacity: number;
+  is_active: boolean;
+  driver_id?: string;
+}
+
+export interface Driver {
+  id: string;
+  full_name: string;
+  email?: string;
+  phone?: string;
+  is_active: boolean;
+}
+
 export const adminApi = {
   getMetrics: async () => {
     const response = await apiService.get<{
@@ -20,17 +36,13 @@ export const adminApi = {
       message: string;
       data: { metrics: Metrics };
     }>('/admin/metrics');
-    if (!response?.data?.data) {
-      throw new Error('Invalid response from server');
-    }
+    if (!response?.data?.data) throw new Error('Invalid response from server');
     return response.data.data;
   },
 
   getAuditLogs: async (queryParams?: any) => {
     const response = await apiService.get('/admin/audit-logs', queryParams);
-    if (!response?.data?.data) {
-      throw new Error('Invalid response from server');
-    }
+    if (!response?.data?.data) throw new Error('Invalid response from server');
     return response.data.data;
   },
 
@@ -40,9 +52,7 @@ export const adminApi = {
       message: string;
       data: { health: SystemHealthData };
     }>('/admin/health');
-    if (!response?.data?.data) {
-      throw new Error('Invalid response from server');
-    }
+    if (!response?.data?.data) throw new Error('Invalid response from server');
     return response.data.data;
   },
 
@@ -52,9 +62,37 @@ export const adminApi = {
       message: string;
       data: { user: any };
     }>(`/admin/users/${userId}/role`, { role });
-    if (!response?.data?.data) {
-      throw new Error('Invalid response from server');
-    }
+    if (!response?.data?.data) throw new Error('Invalid response from server');
+    return response.data.data;
+  },
+
+  getBuses: async (): Promise<{ buses: Bus[] }> => {
+    const response = await apiService.get<{
+      success: boolean;
+      message: string;
+      data: { buses: Bus[] };
+    }>('/admin/buses');
+    if (!response?.data?.data) throw new Error('Invalid response from server');
+    return response.data.data;
+  },
+
+  getDrivers: async (): Promise<{ drivers: Driver[] }> => {
+    const response = await apiService.get<{
+      success: boolean;
+      message: string;
+      data: { drivers: Driver[] };
+    }>('/admin/drivers');
+    if (!response?.data?.data) throw new Error('Invalid response from server');
+    return response.data.data;
+  },
+
+  getUsers: async (params?: { page?: number; limit?: number; role?: string; search?: string }) => {
+    const response = await apiService.get<{
+      success: boolean;
+      message: string;
+      data: { users: any[]; total: number; page: number; limit: number };
+    }>('/admin/users', params);
+    if (!response?.data?.data) throw new Error('Invalid response from server');
     return response.data.data;
   },
 };

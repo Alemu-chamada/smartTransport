@@ -21,8 +21,8 @@ const env = {
   bookingReservationMinutes: Number(process.env.BOOKING_RESERVATION_MINUTES || 15),
   paymentWebhookSecret: process.env.PAYMENT_WEBHOOK_SECRET || "change_me_payment_webhook_secret",
   paymentSessionBaseUrl: process.env.PAYMENT_SESSION_BASE_URL || "https://payments.example.test/checkout",
-  emailUser: process.env.EMAIL_USER || "",
-  emailPass: process.env.EMAIL_PASS || "",
+  resendApiKey: process.env.RESEND_API_KEY || "",
+  brevoApiKey: process.env.BREVO_API_KEY || "",
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   allowedOrigins: process.env.ALLOWED_ORIGINS || "http://localhost:5173",
   sessionSecret: process.env.SESSION_SECRET || "change_me_session_secret_in_production"

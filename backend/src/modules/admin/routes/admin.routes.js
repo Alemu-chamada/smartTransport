@@ -9,6 +9,9 @@ router.use(authMiddleware, restrictTo(USER_ROLES.SYSTEM_ADMIN));
 router.get("/metrics", adminController.getMetrics);
 router.get("/audit-logs", adminController.getAuditLogs);
 router.get("/health", adminController.getHealth);
+router.get("/buses", adminController.getBuses);
+router.get("/drivers", adminController.getDrivers);
+router.get("/users", adminController.getUsers);
 
 router.patch(
   "/users/:id/role",

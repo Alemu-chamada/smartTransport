@@ -1,41 +1,29 @@
-const nodemailer = require("nodemailer");
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 const env = require("../../config/env.js");
 const logger = require("../utils/logger.js");
 
-let transporter = null;
+// Initialize Brevo (formerly Sendinblue) client
+let brevoClient = null;
 
-const initializeTransporter = () => {
-  if (!env.emailUser || !env.emailPass) {
-    logger.warn("Email credentials not configured. Email service disabled.");
+const initializeBrevo = () => {
+  const apiKey = process.env.BREVO_API_KEY || env.brevoApiKey;
+  
+  if (!apiKey) {
+    logger.warn("Brevo API key not configured. Email service disabled.");
     return null;
   }
 
   try {
-    transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: env.emailUser,
-        pass: env.emailPass,
-      }
-    });
-
-    // Test SMTP connection
-    transporter.verify((error, success) => {
-      if (error) {
-        console.error("SMTP Verify Error:", error);
-        logger.error("SMTP verification failed", { error: error.message });
-      } else {
-        console.log("SMTP Server Ready");
-        logger.info("SMTP Server Ready");
-      }
-    });
-
-    logger.info("Email transporter initialized successfully");
-    return transporter;
+    const defaultClient = SibApiV3Sdk.ApiClient.instance;
+    const apiKeyAuth = defaultClient.authentications['api-key'];
+    apiKeyAuth.apiKey = apiKey;
+    
+    brevoClient = new SibApiV3Sdk.TransactionalEmailsApi();
+    logger.info("Brevo email service initialized successfully");
+    console.log("✅ Brevo email service ready");
+    return brevoClient;
   } catch (error) {
-    logger.error("Failed to initialize email transporter", {
+    logger.error("Failed to initialize Brevo client", {
       error: error.message,
     });
     return null;
@@ -167,12 +155,12 @@ const generateOtpEmailHtml = (otp) => {
 };
 
 const sendOtpEmail = async ({ to, otp }) => {
-  if (!transporter) {
-    transporter = initializeTransporter();
+  if (!brevoClient) {
+    brevoClient = initializeBrevo();
   }
 
-  if (!transporter) {
-    logger.error("Email transporter not available. Cannot send OTP email.");
+  if (!brevoClient) {
+    logger.error("Brevo client not available. Cannot send OTP email.");
     throw new Error("Email service is not configured.");
   }
 
@@ -184,32 +172,48 @@ const sendOtpEmail = async ({ to, otp }) => {
     throw new Error("OTP code is required.");
   }
 
-  const mailOptions = {
-    from: `"Transportation Management System" <${env.emailUser}>`,
-    to: to,
-    subject: "Transportation Management System - Verification Code",
-    html: generateOtpEmailHtml(otp),
+  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+  
+  sendSmtpEmail.sender = {
+    name: "Smart Transport System",
+    email: "smarttransportserv@gmail.com"
   };
+  
+  sendSmtpEmail.to = [{ email: to }];
+  sendSmtpEmail.subject = "Smart Transport - Your Verification Code";
+  sendSmtpEmail.htmlContent = generateOtpEmailHtml(otp);
+  sendSmtpEmail.textContent = `Your verification code is: ${otp}. This code expires in 5 minutes. Do not share this code with anyone.`;
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("OTP email sent successfully", info);
+    const data = await brevoClient.sendTransacEmail(sendSmtpEmail);
+    
+    console.log("✅ OTP email sent successfully via Brevo");
+    console.log("   📧 Recipient:", to);
+    console.log("   📨 Message ID:", data.messageId);
+    console.log("   ⏱️  Timestamp:", new Date().toISOString());
+    console.log("   ℹ️  Check your inbox and SPAM folder");
+    console.log("   🔗 Monitor delivery at: https://app.brevo.com/statistics/email");
+    
     logger.info("OTP email sent successfully", {
-      messageId: info.messageId,
+      messageId: data.messageId,
       recipient: to,
+      timestamp: new Date().toISOString(),
     });
+
     return {
       success: true,
-      messageId: info.messageId,
+      messageId: data.messageId,
     };
   } catch (error) {
-    console.error("Failed to send OTP email - FULL ERROR:", error);
+    console.error("❌ Failed to send OTP email - Brevo API Error:");
+    console.error("   Error:", error.message);
+    console.error("   Body:", error.body);
+    console.error("   Code:", error.code);
+    
     logger.error("Failed to send OTP email", {
       error: error.message,
+      errorBody: error.body,
       errorCode: error.code,
-      errorCommand: error.command,
-      errorResponse: error.response,
-      errorStack: error.stack,
       recipient: to,
     });
     throw new Error(`Failed to send OTP email: ${error.message}`);
@@ -218,5 +222,5 @@ const sendOtpEmail = async ({ to, otp }) => {
 
 module.exports = {
   sendOtpEmail,
-  initializeTransporter,
+  initializeBrevo,
 };

@@ -1,422 +1,255 @@
-<div align="center">
+# Smart Transportation Management System
 
-# 🚐 Transportation Management System
+A full-stack, role-based web application for managing transportation operations — from trip scheduling and passenger booking through real-time vehicle tracking and payment processing.
 
-### *Revolutionizing Urban Mobility with Smart Technology*
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
-[![PostgreSQL](https://img.shields.io/badge/postgresql-%3E%3D14-blue)](https://www.postgresql.org/)
-[![React](https://img.shields.io/badge/react-18.3.1-61DAFB?logo=react)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/typescript-5.6.2-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+**Live Demo:** [smart-transport-19ii-sage.vercel.app](https://smart-transport-19ii-sage.vercel.app)  
+**Backend API:** [smarttransport-production.up.railway.app](https://smarttransport-production.up.railway.app)
 
 ---
 
-### *A comprehensive, production-ready platform for managing transportation services with real-time tracking, secure bookings, and intelligent user management*
+## Overview
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Quick Start](#-quick-start) • [production-ready](#-demo) • [Documentation](#-documentation)
-
----
-
-</div>
-
-## 🌟 Overview
-
-The **Transportation Management System (TMS)** is a modern, full-stack web application designed to streamline transportation operations. Built with cutting-edge technologies, it provides a seamless experience for passengers, drivers, and administrators while maintaining enterprise-grade security and performance.
-
-### ✨ What Makes TMS Special?
-
-- 🔐 **Bank-Grade Security** - Email OTP authentication, JWT tokens, and encrypted passwords
-- 📊 **Real-Time Analytics** - Live dashboard with system metrics for all users
-- 🎯 **Role-Based Access** - Intelligent permission system for passengers, drivers, and admins
-- 💳 **Secure Payments** - Integrated payment processing with webhook support
-- 🗺️ **Live Tracking** - Real-time trip tracking via WebSocket technology
-- 📱 **Responsive Design** - Beautiful UI that works seamlessly on all devices
-- ⚡ **Lightning Fast** - Optimized with Redis caching and efficient database queries
-- 🔔 **Smart Notifications** - Real-time updates for bookings, trips, and payments
+The Smart Transportation Management System (TMS) digitalises and streamlines public and private transportation workflows. It supports six distinct user roles, each with precisely scoped access, and covers the complete journey lifecycle — booking, payment, tracking, notifications, and post-trip reporting.
 
 ---
 
-## 🎯 Features
+## Features
 
-### 🚀 Core Functionality
-
-<table>
-<tr>
-<td width="50%">
-
-#### For Passengers 👥
-- 🔍 **Smart Trip Discovery** - Find trips by route, time, and price
-- 💺 **Interactive Seat Selection** - Visual seat picker with real-time availability
-- 📱 **Booking Management** - View, modify, and track all bookings
-- 💳 **Secure Payments** - Multiple payment options with instant confirmation
-- 🗺️ **Live Tracking** - Track your trip in real-time on the map
-- 🔔 **Instant Notifications** - Updates on booking status and trip changes
-- 📊 **Personal Dashboard** - View statistics and travel history
-
-</td>
-<td width="50%">
-
-#### For Admins 🛡️
-- 👥 **User Management** - Complete control over user accounts and roles
-- 🚗 **Trip Management** - Create, update, and monitor all trips
-- 💰 **Revenue Analytics** - Real-time financial reports and insights
-- 📊 **System Metrics** - Monitor performance and user activity
-- 🔍 **Audit Logs** - Complete trail of all system actions
-- ⚙️ **System Health** - Monitor database, Redis, and server status
-- 📈 **Booking Analytics** - Track booking trends and patterns
-
-</td>
-</tr>
-</table>
-
-### 🎨 User Experience
-
-- **Universal Dashboard** - All authenticated users get access to beautiful dashboards with real-time metrics
-- **Smart Navigation** - Intuitive interface that adapts to your role
-- **Dark Mode Ready** - Eye-friendly theme for day and night usage
-- **Responsive Design** - Perfect experience on mobile, tablet, and desktop
-- **Smooth Animations** - Delightful interactions powered by Framer Motion
+| Feature | Description |
+|---|---|
+| **OTP Authentication** | Email-based two-factor login via Brevo API. Account lockout after failed attempts. |
+| **Role-Based Access Control** | Six roles with server-enforced and client-enforced permissions. |
+| **Trip Booking** | Real-time seat selection, booking state machine, 15-minute reservation hold. |
+| **Secure Payments** | Payment gateway integration with webhook verification and audit trail. |
+| **Live Vehicle Tracking** | Socket.IO GPS updates visible to passengers and admins. |
+| **Community Posts** | Traffic authorities publish announcements; users comment. |
+| **Nearby Services** | Integrated locator for garages and fuel stations. |
+| **Admin Dashboard** | User management, role assignment, audit logs, system health. |
+| **Notifications** | Event-driven alerts for bookings, payments, profile updates, and system events. |
+| **Driver & Fleet Management** | Driver onboarding, profile verification workflow, vehicle assignment. |
 
 ---
 
-## 🛠️ Tech Stack
+## User Roles
 
-### Backend Architecture
+| Role | Description |
+|---|---|
+| `passenger` | Default role. Books trips, makes payments, tracks journeys. |
+| `driver` | Drives trips, updates live location. Requires admin verification. |
+| `traffic_authority` | Publishes traffic posts and announcements. |
+| `garage_manager` | Manages garage service listings. |
+| `fuel_station_manager` | Manages fuel station service listings. |
+| `system_admin` | Full platform access — users, trips, bookings, payments, audit logs. |
+
+All new registrations default to `passenger`. Admins promote users to other roles.
+
+---
+
+## Tech Stack
+
+### Frontend
+- **React 18** + TypeScript
+- **Vite** — build tool
+- **Tailwind CSS** + shadcn/ui — styling and components
+- **Framer Motion** — animations
+- **React Router v6** — routing with role-based guards
+- **Socket.IO Client** — live tracking
+
+### Backend
+- **Node.js** + **Express.js**
+- **PostgreSQL** (Neon serverless) — primary database
+- **Redis** (Upstash) — session caching, rate limiting
+- **Socket.IO** — real-time WebSocket server
+- **JWT** — stateless authentication
+- **Brevo API** — transactional email (OTP delivery)
+- **Bull** — background job queues (booking expiry, payment retry)
+
+### Infrastructure
+- **Frontend:** Vercel
+- **Backend:** Railway
+- **Database:** Neon PostgreSQL
+- **Redis:** Upstash
+
+---
+
+## Project Structure
 
 ```
-┌─────────────────────────────────────────────┐
-│  Node.js + Express.js REST API              │
-├─────────────────────────────────────────────┤
-│  🔐 JWT Authentication                       │
-│  📧 Email OTP (Nodemailer + Gmail)          │
-│  🗄️ PostgreSQL Database                     │
-│  ⚡ Redis Caching                           │
-│  🔌 Socket.IO Real-time                     │
-│  🔒 Bcrypt Password Hashing                 │
-└─────────────────────────────────────────────┘
+Transportation-Management-System/
+├── frontend/                  # React + TypeScript SPA
+│   ├── src/
+│   │   ├── features/          # Feature modules (auth, trip, booking, etc.)
+│   │   ├── pages/             # Route-level page components
+│   │   │   └── admin/         # Admin-only pages
+│   │   ├── providers/         # AuthProvider — global auth state
+│   │   ├── routes/            # Layouts, ProtectedRoute, Navbar
+│   │   └── shared/            # Reusable UI components and services
+│   ├── index.html
+│   └── vite.config.ts
+│
+├── backend/                   # Node.js + Express API
+│   ├── src/
+│   │   ├── modules/           # Feature modules (auth, trip, booking, admin, etc.)
+│   │   │   ├── auth/
+│   │   │   ├── trip/
+│   │   │   ├── booking/
+│   │   │   ├── payment/
+│   │   │   ├── tracking/
+│   │   │   ├── post/
+│   │   │   ├── notification/
+│   │   │   ├── admin/
+│   │   │   ├── user/
+│   │   │   ├── profile/
+│   │   │   ├── service/
+│   │   │   └── audit/
+│   │   ├── infrastructure/    # Database, Redis, Socket.IO
+│   │   ├── shared/            # Middleware, utilities, error handling
+│   │   ├── jobs/              # Background jobs (booking expiry, payment retry)
+│   │   ├── config/            # Environment config
+│   │   └── app.js / server.js
+│   └── package.json
+│
+├── deployment/                # Production config templates and scripts
+│   ├── .env.backend.production.template
+│   ├── .env.frontend.production.template
+│   ├── vercel.json
+│   ├── neon-database-setup.sql
+│   ├── database-validation.sql
+│   ├── generate-secrets.js
+│   ├── health-check.js
+│   └── backup-database.sh
+│
+└── TMSDB.sql                  # Full PostgreSQL schema (v3.1)
 ```
-
-### Frontend Stack
-
-```
-┌─────────────────────────────────────────────┐
-│  React 18 + TypeScript + Vite              │
-├─────────────────────────────────────────────┤
-│  🎨 Tailwind CSS                            │
-│  🎭 Shadcn UI Components                    │
-│  🎬 Framer Motion Animations                │
-│  🧭 React Router Navigation                 │
-│  📱 Responsive Design                       │
-└─────────────────────────────────────────────┘
-```
-
-### DevOps & Tools
-
-- **Docker** - Containerization for PostgreSQL and Redis
-- **Nodemon** - Hot reload during development
-- **ESLint** - Code quality and consistency
-- **Git** - Version control with clean history
 
 ---
 
-## 🚀 Quick Start
+## Getting Started (Local Development)
 
 ### Prerequisites
+- Node.js 18+
+- PostgreSQL 15+ (or a Neon account)
+- Redis (or an Upstash account)
 
-Before you begin, ensure you have:
-- **Node.js** (v20 or higher) - [Download](https://nodejs.org/)
-- **PostgreSQL** (v14 or higher) - [Download](https://www.postgresql.org/download/)
-- **Redis** (v6 or higher) - [Download](https://redis.io/download)
-- **Git** - [Download](https://git-scm.com/)
-
-### Installation
-
-#### 1️⃣ Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Alemu-chamada/Transportation-Management-System.git
 cd Transportation-Management-System
 ```
 
-#### 2️⃣ Database Setup
+### 2. Set up the database
 
 ```bash
-# Create PostgreSQL database
-createdb TMSDB
-
-# Import the schema
-psql -d TMSDB -f TMSDB.sql
+psql -U postgres -d your_database -f TMSDB.sql
 ```
 
-#### 3️⃣ Backend Setup
+### 3. Configure the backend
 
 ```bash
 cd backend
-
-# Install dependencies
-npm install
-
-# Configure environment
 cp .env.example .env
+# Edit .env with your database credentials, JWT secret, and Brevo API key
+```
 
-# Edit .env with your credentials
-# Required: Database, Redis, JWT secrets, Email (Gmail)
+Required variables:
 
-# Start Redis (if not running)
-redis-server
+```env
+NODE_ENV=development
+PORT=5002
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=your_db
+PGUSER=your_user
+PGPASSWORD=your_password
+JWT_SECRET=your_jwt_secret
+OTP_EXPIRES_IN_MINUTES=10
+BREVO_API_KEY=your_brevo_api_key
+```
 
-# Run the backend
+### 4. Start the backend
+
+```bash
+cd backend
+npm install
 npm run dev
 ```
 
-**Backend runs on:** `http://localhost:5002`
-
-#### 4️⃣ Frontend Setup
+### 5. Configure and start the frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Optional: Configure API URL
-echo "VITE_API_URL=http://localhost:5002/api/v1" > .env
-
-# Start the frontend
+# Create .env with:
+# VITE_API_URL=http://localhost:5002/api/v1
 npm run dev
 ```
 
-**Frontend runs on:** `http://localhost:5173`
+The app will be available at `http://localhost:5173`.
 
 ---
 
-## 🔐 Email Configuration
+## Deployment
 
-### Gmail Setup for OTP
+The application is deployed across three platforms:
 
-1. **Enable 2-Factor Authentication** on your Gmail account
-2. Navigate to: **Google Account** → **Security** → **2-Step Verification**
-3. Generate an **App Password** for "Mail"
-4. Add to `backend/.env`:
+| Service | Platform | URL |
+|---|---|---|
+| Frontend | Vercel | [smart-transport-19ii-sage.vercel.app](https://smart-transport-19ii-sage.vercel.app) |
+| Backend API | Railway | [smarttransport-production.up.railway.app](https://smarttransport-production.up.railway.app) |
+| Database | Neon PostgreSQL | `ep-royal-voice-ad02cekj-pooler.c-2.us-east-1.aws.neon.tech` |
+| Redis | Upstash | Configured via `REDIS_URL` |
 
-```env
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-16-digit-app-password
-```
-
-🔒 **Security Note:** Never commit `.env` files. Use `.env.example` as a template.
+Production environment templates are in `deployment/`.
 
 ---
 
-## 📁 Project Structure
+## API Overview
 
-```
-Transportation-Management-System/
-│
-├── 🗄️ backend/
-│   ├── src/
-│   │   ├── config/           # Environment configuration
-│   │   ├── infrastructure/   # Database, Redis, Socket.IO
-│   │   ├── modules/          # Feature modules
-│   │   │   ├── auth/         # Authentication & OTP
-│   │   │   ├── booking/      # Booking management
-│   │   │   ├── trip/         # Trip operations
-│   │   │   ├── payment/      # Payment processing
-│   │   │   ├── user/         # User management
-│   │   │   └── admin/        # Admin operations
-│   │   ├── jobs/             # Background jobs
-│   │   └── shared/           # Utilities & middleware
-│   ├── .env.example          # Environment template
-│   └── README.md             # Backend documentation
-│
-├── 🎨 frontend/
-│   ├── src/
-│   │   ├── features/         # Feature-based modules
-│   │   ├── pages/            # Page components
-│   │   │   ├── admin/        # Admin pages
-│   │   │   ├── Home.tsx      # Universal dashboard
-│   │   │   └── ...
-│   │   ├── providers/        # React Context
-│   │   ├── routes/           # Routing configuration
-│   │   ├── shared/           # Reusable components
-│   │   └── styles/           # Global styles
-│   └── vite.config.ts
-│
-├── 📊 TMSDB.sql              # Database schema
-├── 📄 LICENSE                # MIT License
-├── 🤝 CONTRIBUTING.md        # Contribution guidelines
-└── 📖 README.md              # This file
-```
+Base URL: `/api/v1`
+
+| Prefix | Description |
+|---|---|
+| `/auth` | Register, login, OTP verify, resend OTP, logout |
+| `/trips` | List, create, and fetch trips |
+| `/bookings` | Create and manage bookings |
+| `/payment` | Payment sessions and webhooks |
+| `/tracking` | Live location updates |
+| `/posts` | Community posts and comments |
+| `/notifications` | User notifications |
+| `/services` | Nearby garages and fuel stations |
+| `/profile` | User profile management |
+| `/admin` | Admin-only — users, buses, drivers, metrics, audit logs |
 
 ---
 
-## 🔌 API Endpoints
+## Database Schema
 
-### Authentication & Authorization
+The full PostgreSQL schema is in `TMSDB.sql` (v3.1). Key tables:
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/api/v1/auth/register` | Register new user | ❌ |
-| `POST` | `/api/v1/auth/login` | Login with credentials | ❌ |
-| `POST` | `/api/v1/auth/verify-otp` | Verify OTP code | ❌ |
-| `POST` | `/api/v1/auth/resend-otp` | Resend OTP | ❌ |
-| `POST` | `/api/v1/auth/logout` | Logout user | ✅ |
-| `GET` | `/api/v1/auth/me` | Get current user | ✅ |
-
-### Trip Management
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/api/v1/trips/scheduled` | Get scheduled trips | ✅ |
-| `GET` | `/api/v1/trips/nearby` | Search trips by route | ✅ |
-| `GET` | `/api/v1/trips/:id` | Get trip details | ✅ |
-| `POST` | `/api/v1/trips` | Create new trip | ✅ Admin |
-| `GET` | `/api/v1/trips/:id/occupied-seats` | Get occupied seats | ✅ |
-
-### Booking Operations
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/api/v1/bookings/my` | Get user bookings | ✅ |
-| `POST` | `/api/v1/bookings` | Create booking | ✅ |
-| `PATCH` | `/api/v1/bookings/:id/cancel` | Cancel booking | ✅ |
-
-### Admin Panel
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/api/v1/admin/users` | List all users | ✅ Admin |
-| `PATCH` | `/api/v1/admin/users/:id/role` | Update user role | ✅ Admin |
-| `GET` | `/api/v1/admin/metrics` | System metrics | ✅ Admin |
-| `GET` | `/api/v1/admin/audit-logs` | View audit logs | ✅ Admin |
-| `GET` | `/api/v1/admin/health` | System health check | ✅ Admin |
+- `users` — all accounts with role, lockout, and audit fields
+- `otp_codes` — permanent OTP audit trail
+- `trips` — full trip lifecycle with status machine
+- `bookings` — booking state machine with 15-min reservation hold
+- `payments` — payment records with webhook verification
+- `posts` / `comments` — community feed
+- `notifications` — event-driven notification delivery tracking
+- `role_profiles` — per-role profile completion wizard
+- `services` — garage and fuel station locations
+- `audit_logs` — immutable action audit trail
 
 ---
 
-## 👥 User Roles & Permissions
-
-### 🎭 Role Matrix
-
-| Feature | Passenger | Driver | Admin |
-|---------|:---------:|:------:|:-----:|
-| View Dashboard | ✅ | ✅ | ✅ |
-| Book Trips | ✅ | ❌ | ✅ |
-| Manage Own Bookings | ✅ | ❌ | ✅ |
-| Track Trips | ✅ | ✅ | ✅ |
-| Create Trips | ❌ | ❌ | ✅ |
-| Manage Users | ❌ | ❌ | ✅ |
-| View Audit Logs | ❌ | ❌ | ✅ |
-| System Settings | ❌ | ❌ | ✅ |
-
-
-
-## 🔒 Security Features
-
-- ✅ **JWT Authentication** - Secure token-based authentication
-- ✅ **Email OTP Verification** - Two-factor authentication via email
-- ✅ **Password Hashing** - Bcrypt with salt rounds
-- ✅ **Rate Limiting** - Protection against brute force attacks
-- ✅ **Input Validation** - Server-side validation on all endpoints
-- ✅ **SQL Injection Protection** - Parameterized queries
-- ✅ **XSS Prevention** - Content sanitization
-- ✅ **CORS Configuration** - Controlled cross-origin requests
-- ✅ **Audit Logging** - Complete trail of all actions
-- ✅ **Environment Variables** - Secrets management
-
----
-
-## 📊 System Requirements
-
-### Development
-
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| **CPU** | 2 cores | 4+ cores |
-| **RAM** | 4 GB | 8 GB+ |
-| **Storage** | 10 GB | 50 GB SSD |
-| **Node.js** | v20.0.0 | Latest LTS |
-| **PostgreSQL** | v14 | v15+ |
-| **Redis** | v6 | v7+ |
-
-### Production
-
-| Component | Specification |
-|-----------|---------------|
-| **CPU** | 4+ cores |
-| **RAM** | 16 GB+ |
-| **Storage** | 100 GB+ SSD |
-| **Database** | Managed PostgreSQL |
-| **Cache** | Managed Redis |
-| **SSL/TLS** | Required |
-
----
-
-## 🚢 Deployment
-
-### Production Checklist
-
-- [ ] Set `NODE_ENV=production`
-- [ ] Generate strong JWT secrets
-- [ ] Configure production database
-- [ ] Set up managed Redis
-- [ ] Configure email service
-- [ ] Enable HTTPS/SSL
-- [ ] Set up reverse proxy (Nginx)
-- [ ] Configure CORS for production domain
-- [ ] Set up automated backups
-- [ ] Configure logging and monitoring
-- [ ] Set up CI/CD pipeline
-
-### Environment Variables
-
-See `backend/.env.example` for all required configuration variables.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
-
-### How to Contribute
-
-1. 🍴 Fork the repository
-2. 🌿 Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. 💻 Make your changes
-4. ✅ Test thoroughly
-5. 📝 Commit (`git commit -m 'Add AmazingFeature'`)
-6. 🚀 Push (`git push origin feature/AmazingFeature`)
-7. 🎉 Open a Pull Request
-
----
-
-## 📝 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
+## Author
 
 **Alemu Chamada**  
-*Computer Science and Engineering*  
-*Adama Science and Technology University (ASTU)*
-
-
-## 📞 Support & Contact
-
-- 📧 **Email:** alemuchamadda@gmail.com
-- 🐛 **Issues:** [GitHub Issues](https://github.com/Alemu-chamada/Transportation-Management-System/issues)
-- 💬 **Discussions:** [GitHub Discussions](https://github.com/Alemu-chamada/Transportation-Management-System/discussions)
+Email: [alemuchamada@gmail.com](mailto:alemuchamada@gmail.com)  
+Phone: +251 95 604 7594  
+GitHub: [github.com/Alemu-chamada](https://github.com/Alemu-chamada)  
+System Email: [smarttransportserv@gmail.com](mailto:smarttransportserv@gmail.com)
 
 ---
 
-<div align="center">
+## License
 
-### ⭐ Star this repository if you find it helpful!
-
-**Made with ❤️ by Alemu Chamada**
-
-[⬆ Back to Top](#-transportation-management-system)
-
-</div>
+This project is licensed under the terms of the [LICENSE](./LICENSE) file.

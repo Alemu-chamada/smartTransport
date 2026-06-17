@@ -116,9 +116,74 @@ const getSystemHealth = async () => {
   };
 };
 
+const getBuses = async () => {
+  const result = await db.query(
+    `SELECT id, plate_number, capacity, is_active, driver_id, created_at
+     FROM buses
+     WHERE is_active = TRUE
+     ORDER BY plate_number ASC`
+  );
+  return result.rows;
+};
+
+const getDrivers = async () => {
+  const result = await db.query(
+    `SELECT u.id, u.full_name, u.email, u.phone, u.is_active
+     FROM users u
+     WHERE u.role = 'driver' AND u.is_active = TRUE
+     ORDER BY u.full_name ASC`
+  );
+  return result.rows;
+};
+
+const getUsers = async ({ page = 1, limit = 50, role, search } = {}) => {
+  const offset = (page - 1) * limit;
+  const params = [];
+  const conditions = [];
+
+  if (role) {
+    params.push(role);
+    conditions.push(`role = $${params.length}`);
+  }
+
+  if (search) {
+    params.push(`%${search}%`);
+    conditions.push(`(full_name ILIKE $${params.length} OR email ILIKE $${params.length})`);
+  }
+
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  params.push(limit);
+  params.push(offset);
+
+  const result = await db.query(
+    `SELECT id, full_name, email, phone, role, is_active, created_at
+     FROM users
+     ${where}
+     ORDER BY created_at DESC
+     LIMIT $${params.length - 1} OFFSET $${params.length}`,
+    params
+  );
+
+  const countResult = await db.query(
+    `SELECT COUNT(*)::int AS total FROM users ${where}`,
+    params.slice(0, params.length - 2)
+  );
+
+  return {
+    users: result.rows,
+    total: countResult.rows[0].total,
+    page: Number(page),
+    limit: Number(limit),
+  };
+};
+
 module.exports = {
   assignUserRole,
   getMetrics,
   getAuditLogs,
-  getSystemHealth
+  getSystemHealth,
+  getBuses,
+  getDrivers,
+  getUsers,
 };

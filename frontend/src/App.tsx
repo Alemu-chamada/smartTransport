@@ -25,8 +25,11 @@ import { AuditLogs } from "./pages/admin/AuditLogs";
 import { SystemHealth } from "./pages/admin/SystemHealth";
 import { NotificationCenter } from "./pages/admin/NotificationCenter";
 import { Settings } from "./pages/admin/Settings";
-import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { ProtectedRoute, ROLES } from "./routes/ProtectedRoute";
 import { LandingPage } from "./pages/LandingPage";
+import { FeaturesPage } from "./pages/FeaturesPage";
+import { AboutPage } from "./pages/AboutPage";
+import { ContactPage } from "./pages/ContactPage";
 import { useAuth } from "./providers/AuthProvider";
 
 export default function App() {
@@ -45,6 +48,9 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/signin" element={!isAuthenticated ? <SignIn /> : <Navigate to="/dashboard" replace />} />
         <Route path="/signup" element={!isAuthenticated ? <SignUp /> : <Navigate to="/dashboard" replace />} />
         <Route path="/otp" element={!isAuthenticated ? <OTP /> : <Navigate to="/dashboard" replace />} />
@@ -62,17 +68,27 @@ export default function App() {
         <Route path="/community" element={<ProtectedRoute><PostsAndComments /></ProtectedRoute>} />
         <Route path="/nearby" element={<ProtectedRoute><NearbyServices /></ProtectedRoute>} />
         <Route path="/tracking" element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute allowedRoles={['system_admin']}><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['system_admin']}><UserManagement /></ProtectedRoute>} />
-        <Route path="/admin/trips" element={<ProtectedRoute allowedRoles={['system_admin']}><TripManagement /></ProtectedRoute>} />
-        <Route path="/admin/trips/create" element={<ProtectedRoute allowedRoles={['system_admin']}><TripManagement /></ProtectedRoute>} />
-        <Route path="/admin/bookings" element={<ProtectedRoute allowedRoles={['system_admin']}><BookingManagement /></ProtectedRoute>} />
-        <Route path="/admin/payments" element={<ProtectedRoute allowedRoles={['system_admin']}><PaymentManagement /></ProtectedRoute>} />
-        <Route path="/admin/tracking" element={<ProtectedRoute allowedRoles={['system_admin']}><TrackingMonitor /></ProtectedRoute>} />
-        <Route path="/admin/audit-logs" element={<ProtectedRoute allowedRoles={['system_admin']}><AuditLogs /></ProtectedRoute>} />
-        <Route path="/admin/system-health" element={<ProtectedRoute allowedRoles={['system_admin']}><SystemHealth /></ProtectedRoute>} />
-        <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={['system_admin']}><NotificationCenter /></ProtectedRoute>} />
-        <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['system_admin']}><Settings /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><UserManagement /></ProtectedRoute>} />
+        <Route path="/admin/trips" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><TripManagement /></ProtectedRoute>} />
+        <Route path="/admin/trips/create" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><TripManagement /></ProtectedRoute>} />
+        <Route path="/admin/bookings" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><BookingManagement /></ProtectedRoute>} />
+        <Route path="/admin/payments" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><PaymentManagement /></ProtectedRoute>} />
+        <Route path="/admin/tracking" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><TrackingMonitor /></ProtectedRoute>} />
+        <Route path="/admin/audit-logs" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><AuditLogs /></ProtectedRoute>} />
+        <Route path="/admin/system-health" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><SystemHealth /></ProtectedRoute>} />
+        <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><NotificationCenter /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><Settings /></ProtectedRoute>} />
+        <Route path="/unauthorized" element={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🚫</div>
+              <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
+              <p className="text-muted-foreground mb-6">You don't have permission to view this page.</p>
+              <a href="/dashboard" className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors font-medium">Go to Dashboard</a>
+            </div>
+          </div>
+        } />
         <Route
           path="/trips"
           element={

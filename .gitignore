@@ -1,11 +1,19 @@
+# ============================================================
+# Smart Transportation Management System — .gitignore
+# ============================================================
+
+# ----------------------------
 # Dependencies
+# ----------------------------
 node_modules/
 .pnp
 .pnp.js
 bower_components/
 jspm_packages/
 
+# ----------------------------
 # Build outputs
+# ----------------------------
 dist/
 build/
 .next/
@@ -14,83 +22,90 @@ out/
 .vite
 .parcel-cache
 
-# Environment files - NEVER COMMIT THESE
+# ----------------------------
+# Environment files — NEVER COMMIT
+# ----------------------------
 .env
-.env.*
-!.env.example
+.env.local
+.env.development
+.env.production
 backend/.env
 frontend/.env
 *.pem
 *.key
 *.cert
 
-# Database files
+# Keep .env.example (template only — no real values)
+!.env.example
+!backend/.env.example
+
+# ----------------------------
+# Database & local SQL dumps
+# ----------------------------
 *.sql.backup
 *.db
 *.sqlite
 *.sqlite3
 dump.sql
 dump.rdb
-TMSDB.sql
 local_backup.sql
-
-# Database backups (deployment)
 deployment/backups/
 backups/*.sql
 backups/*.sql.gz
 
+# ----------------------------
 # Logs
+# ----------------------------
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-# Runtime data
-pids
+# ----------------------------
+# Runtime / process files
+# ----------------------------
+pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Coverage directory
+# ----------------------------
+# Test coverage
+# ----------------------------
 coverage/
 *.lcov
 .nyc_output
 
-# Cache directories
+# ----------------------------
+# Cache
+# ----------------------------
 .cache
 .npm
 .eslintcache
-.parcel-cache
-.fusebox/
-.dynamodb/
 .yarn/cache
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
 
-# Test files (development only)
+# ----------------------------
+# Temporary / scratch files
+# ----------------------------
 test-*.js
 test-*.ts
 *.test.local.js
 *.spec.local.js
-
-# Backup files
 *.backup
 *.bak
 *.old
 *.tmp
 *.temp
 
-# Docker
-docker-compose.override.yml
-
-# IDE and Editor files
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
+# ----------------------------
+# IDE / Editor
+# ----------------------------
+.vscode/
 .idea/
 *.suo
 *.ntvs*
@@ -100,9 +115,10 @@ docker-compose.override.yml
 *.swp
 *.swo
 *~
-.vscode-test
 
-# OS generated files
+# ----------------------------
+# OS generated
+# ----------------------------
 .DS_Store
 .DS_Store?
 ._*
@@ -112,49 +128,25 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
-# Package manager files
+# ----------------------------
+# Package manager locks (keep package-lock at root if needed)
+# ----------------------------
 .pnp.*
 .yarn-integrity
 .node_repl_history
 *.tgz
 
-# Framework specific
-.next
-.nuxt
-.vuepress/dist
-.serverless/
-.tern-port
-.docusaurus
-.temp
-
-# Application specific
-apply-database-fixes.js
-
-# Deployment artifacts to KEEP in repo (these are templates/scripts)
-# deployment/README.md
-# deployment/DEPLOYMENT_GUIDE.md
-# deployment/QUICK_START.md
-# deployment/DEPLOYMENT_CHECKLIST.md
-# deployment/.env.backend.production.template
-# deployment/.env.frontend.production.template
-# deployment/generate-secrets.js
-# deployment/cors-config.js
-# deployment/health-check.js
-# deployment/neon-database-setup.sql
-# deployment/database-validation.sql
-# deployment/neon-db-config.js
-# deployment/render.yaml
-# deployment/vercel.json
-# deployment/.github-workflows-deploy.yml
-# deployment/backup-database.sh
-# deployment/restore-database.sh
-# DEPLOYMENT_COMPLETE.md
-
-# DO NOT COMMIT - Deployment outputs and generated files
+# ----------------------------
+# Deployment secrets / generated
+# ----------------------------
 deployment/.vercel/
 deployment/.env
 deployment/.env.production
 deployment/.env.local
 deployment/secrets.txt
 deployment/production-secrets.txt
-.vscode/
+
+# ----------------------------
+# Docker overrides
+# ----------------------------
+docker-compose.override.yml

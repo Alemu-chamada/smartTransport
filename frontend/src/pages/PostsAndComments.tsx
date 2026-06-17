@@ -15,6 +15,8 @@ export function PostsAndComments() {
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState<Record<string, string>>({});
   const [comments, setComments] = useState<Record<string, any[]>>({});
+  const [commentsLoading, setCommentsLoading] = useState<Record<string, boolean>>({});
+  const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
@@ -28,6 +30,14 @@ export function PostsAndComments() {
         const data = await postApi.getAllPosts();
         if (data?.posts) {
           setPosts(data.posts);
+          // Auto-load comments for all posts
+          data.posts.forEach((post: any) => {
+            loadComments(post.id);
+          });
+          // Expand comments on all posts by default
+          const expanded: Record<string, boolean> = {};
+          data.posts.forEach((post: any) => { expanded[post.id] = true; });
+          setExpandedComments(expanded);
         }
       } catch (error) {
         console.error("Failed to load posts:", error);
@@ -39,6 +49,7 @@ export function PostsAndComments() {
   }, []);
 
   const loadComments = async (postId: string) => {
+    setCommentsLoading((prev) => ({ ...prev, [postId]: true }));
     try {
       const data = await postApi.getCommentsByPostId(postId);
       if (data?.comments) {
@@ -46,6 +57,16 @@ export function PostsAndComments() {
       }
     } catch (error) {
       console.error("Failed to load comments:", error);
+    } finally {
+      setCommentsLoading((prev) => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  const toggleComments = (postId: string) => {
+    setExpandedComments((prev) => ({ ...prev, [postId]: !prev[postId] }));
+    // Load comments if not yet loaded
+    if (!comments[postId]) {
+      loadComments(postId);
     }
   };
 
@@ -187,54 +208,62 @@ export function PostsAndComments() {
                   </p>
 
                   <div className="flex items-center gap-6 pb-4 border-b border-border">
-            <button 
-              onClick={() => handleToggleLike(post.id)}
-              className={`flex items-center gap-2 transition-colors ${
-                post.is_liked 
-                  ? "text-primary" 
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Heart className={`h-5 w-5 ${post.is_liked ? "fill-current" : ""}`} />
-              <span className="text-sm">{post.like_count}</span>
-            </button>
-            <button
-              onClick={() => loadComments(post.id)}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <MessageCircle className="h-5 w-5" />
-              <span className="text-sm">
-                {comments[post.id]?.length || 0}
-              </span>
-            </button>
-            <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <Share2 className="h-5 w-5" />
-              <span className="text-sm">Share</span>
-            </button>
-          </div>
+                    <button
+                      onClick={() => handleToggleLike(post.id)}
+                      className={`flex items-center gap-2 transition-colors ${
+                        post.is_liked ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <Heart className={`h-5 w-5 ${post.is_liked ? "fill-current" : ""}`} />
+                      <span className="text-sm">{post.like_count || 0}</span>
+                    </button>
+                    <button
+                      onClick={() => toggleComments(post.id)}
+                      className={`flex items-center gap-2 transition-colors ${
+                        expandedComments[post.id] ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      <span className="text-sm">
+                        {commentsLoading[post.id] ? "..." : `${comments[post.id]?.length ?? 0} comments`}
+                      </span>
+                    </button>
+                    <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                      <Share2 className="h-5 w-5" />
+                      <span className="text-sm">Share</span>
+                    </button>
+                  </div>
 
-                  {comments[post.id] && comments[post.id].length > 0 && (
-                    <div className="mt-4 space-y-3">
-                      {comments[post.id].map((comment) => (
-                        <div key={comment.id} className="flex gap-3">
-                          <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                          <div className="flex-1 bg-muted/50 rounded-xl p-3">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-sm font-medium text-foreground">
-                                {comment.author_name}
-                              </p>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(comment.created_at).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-foreground">
-                              {comment.content}
-                            </p>
-                          </div>
+                  {/* Comments section — always shown when expanded */}
+                  {expandedComments[post.id] && (
+                    <div className="mt-4">
+                      {commentsLoading[post.id] ? (
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm py-4">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Loading comments…
                         </div>
-                      ))}
+                      ) : comments[post.id]?.length > 0 ? (
+                        <div className="space-y-3 mb-4">
+                          {comments[post.id].map((comment) => (
+                            <div key={comment.id} className="flex gap-3">
+                              <div className="h-8 w-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                              <div className="flex-1 bg-muted/50 rounded-xl p-3">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <p className="text-sm font-medium text-foreground">{comment.author_name}</p>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(comment.created_at).toLocaleString()}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-foreground">{comment.content}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground py-2 mb-3">No comments yet. Be the first to comment!</p>
+                      )}
                     </div>
                   )}
 

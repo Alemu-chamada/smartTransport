@@ -136,6 +136,17 @@ export const authApi = {
     return response.data.data;
   },
 
+  resendOtp: async (data: { email?: string; phone?: string; purpose: string }) => {
+    const response = await apiService.post<{ success: boolean; message: string; data: { success: boolean; expiresAt: string; userId: string } }>(
+      '/auth/resend-otp',
+      data
+    );
+    if (!response?.data?.data) {
+      throw new Error('Invalid response from server');
+    }
+    return response.data.data;
+  },
+
   logout: async () => {
     await apiService.post('/auth/logout', {});
     apiService.setToken(null);

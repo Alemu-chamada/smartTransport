@@ -42,9 +42,36 @@ const getHealth = asyncHandler(async (req, res) => {
   });
 });
 
+const getBuses = asyncHandler(async (req, res) => {
+  const buses = await adminService.getBuses();
+  return success(res, {
+    message: "Buses fetched successfully",
+    data: { buses }
+  });
+});
+
+const getDrivers = asyncHandler(async (req, res) => {
+  const drivers = await adminService.getDrivers();
+  return success(res, {
+    message: "Drivers fetched successfully",
+    data: { drivers }
+  });
+});
+
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await adminService.getUsers(req.query);
+  return success(res, {
+    message: "Users fetched successfully",
+    data: { users }
+  });
+});
+
 module.exports = {
   assignUserRole,
   getMetrics,
   getAuditLogs,
-  getHealth
+  getHealth,
+  getBuses,
+  getDrivers,
+  getUsers,
 };
