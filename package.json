@@ -1,5 +1,9 @@
 {
-  "dependencies": {
-    "resend": "^6.12.4"
+  "name": "smart-transport-root",
+  "private": true,
+  "description": "Monorepo root — backend runs from /backend, frontend runs from /frontend",
+  "scripts": {
+    "start": "cd backend && node src/server.js",
+    "build": "cd backend && npm install"
   }
 }
