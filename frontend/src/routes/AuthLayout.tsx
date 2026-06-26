@@ -9,7 +9,7 @@ interface AuthLayoutProps {
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "linear-gradient(145deg, #0f0c2e 0%, #1a1740 35%, #0d1f3c 70%, #0a1628 100%)" }}>
+      style={{ background: "linear-gradient(145deg, #0d0b1e 0%, #131030 35%, #0c1628 70%, #080d1a 100%)" }}>
 
       {/* Animated glow blobs */}
       <motion.div

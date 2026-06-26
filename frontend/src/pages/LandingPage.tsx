@@ -315,69 +315,143 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16">
+      <footer className="py-16" style={{ backgroundColor: "#0f0c1a" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+
+            {/* Col 1 — Brand + System Contact */}
             <div>
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-sm" style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
+                <div className="h-10 w-10 rounded-xl flex items-center justify-center shadow-sm"
+                  style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
                   <span className="text-white font-black text-sm">ST</span>
                 </div>
-                <div><span className="font-black text-xl text-white">Smart</span><span className="font-black text-xl text-indigo-300">Transport</span></div>
+                <div>
+                  <span className="font-black text-xl text-white">Smart</span>
+                  <span className="font-black text-xl" style={{ color: "#a5b4fc" }}>Transport</span>
+                </div>
               </div>
-              <p className="text-gray-400 mb-6 text-sm leading-relaxed">Connecting people, simplifying transportation, and building smarter journeys every day.</p>
-              <div className="flex gap-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors"><Facebook className="h-6 w-6" /></a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors"><Linkedin className="h-6 w-6" /></a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors"><Twitter className="h-6 w-6" /></a>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-4">Navigation</h4>
-              <div className="space-y-2">
-                <Link to="/" className="text-gray-400 hover:text-white block transition-colors">Home</Link>
-                <Link to="/features" className="text-gray-400 hover:text-white block transition-colors">Features</Link>
-                <Link to="/about" className="text-gray-400 hover:text-white block transition-colors">About</Link>
-                <Link to="/contact" className="text-gray-400 hover:text-white block transition-colors">Contact</Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-4">Contact Us</h4>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Mail className="h-5 w-5 flex-shrink-0" />
-                  <a href="mailto:smarttransportserv@gmail.com" className="hover:text-white transition-colors text-sm break-all">
+              <p className="mb-5 text-sm leading-relaxed" style={{ color: "#9ca3af" }}>
+                Connecting people, simplifying transportation, and building smarter journeys every day.
+              </p>
+              {/* System contact */}
+              <div className="space-y-2 mb-5">
+                <div className="flex items-center gap-2.5" style={{ color: "#9ca3af" }}>
+                  <Mail className="h-4 w-4 flex-shrink-0" style={{ color: "#818cf8" }} />
+                  <a href="mailto:smarttransportserv@gmail.com"
+                    className="text-xs hover:text-white transition-colors break-all">
                     smarttransportserv@gmail.com
                   </a>
                 </div>
-                <div className="flex items-center gap-3 text-gray-400">
-                  <Phone className="h-5 w-5 flex-shrink-0" />
-                  <a href="tel:+251956047594" className="hover:text-white transition-colors text-sm">
+                <div className="flex items-center gap-2.5" style={{ color: "#9ca3af" }}>
+                  <Phone className="h-4 w-4 flex-shrink-0" style={{ color: "#818cf8" }} />
+                  <a href="tel:+251956047594" className="text-xs hover:text-white transition-colors">
                     +251 95 604 7594
                   </a>
                 </div>
-                <div className="flex items-start gap-3 text-gray-400">
-                  <Map className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm leading-relaxed">
+                <div className="flex items-start gap-2.5" style={{ color: "#9ca3af" }}>
+                  <Map className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: "#818cf8" }} />
+                  <span className="text-xs leading-relaxed">
                     Addis Ababa Science and Technology University<br />
                     Addis Ababa, Ethiopia
                   </span>
                 </div>
               </div>
+              <div className="flex gap-4">
+                <a href="#" className="transition-colors hover:text-white" style={{ color: "#6b7280" }}>
+                  <Facebook className="h-5 w-5" />
+                </a>
+                <a href="#" className="transition-colors hover:text-white" style={{ color: "#6b7280" }}>
+                  <Linkedin className="h-5 w-5" />
+                </a>
+                <a href="#" className="transition-colors hover:text-white" style={{ color: "#6b7280" }}>
+                  <Twitter className="h-5 w-5" />
+                </a>
+              </div>
             </div>
+
+            {/* Col 2 — Navigation */}
             <div>
-              <h4 className="font-semibold text-lg mb-4">Get Started</h4>
-              <p className="text-gray-400 mb-4 text-sm">Ready to simplify your transportation management?</p>
-              <Link to="/signup" className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-xl transition-colors inline-block text-sm">Sign Up Free</Link>
+              <h4 className="font-semibold text-base mb-4" style={{ color: "#e5e7eb" }}>Navigation</h4>
+              <div className="space-y-2.5">
+                {[["Home", "/"], ["Features", "/features"], ["About", "/about"], ["Contact", "/contact"]].map(([label, path]) => (
+                  <Link key={path} to={path}
+                    className="block text-sm transition-colors hover:text-white"
+                    style={{ color: "#9ca3af" }}>
+                    {label}
+                  </Link>
+                ))}
+              </div>
             </div>
+
+            {/* Col 3 — Get Started */}
+            <div>
+              <h4 className="font-semibold text-base mb-4" style={{ color: "#e5e7eb" }}>Get Started</h4>
+              <p className="text-sm mb-5 leading-relaxed" style={{ color: "#9ca3af" }}>
+                Ready to simplify your transportation management?
+              </p>
+              <Link to="/signup"
+                className="inline-block font-semibold px-6 py-3 rounded-xl text-sm transition-colors text-white hover:opacity-90"
+                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
+                Sign Up Free
+              </Link>
+            </div>
+
+            {/* Col 4 — Developer Contact */}
+            <div>
+              <h4 className="font-semibold text-base mb-4" style={{ color: "#e5e7eb" }}>Developer</h4>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
+                    style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
+                    AC
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: "#e5e7eb" }}>Alemu Chamada</p>
+                    <p className="text-xs" style={{ color: "#6b7280" }}>Full-Stack Developer</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5" style={{ color: "#9ca3af" }}>
+                  <Mail className="h-4 w-4 flex-shrink-0" style={{ color: "#34d399" }} />
+                  <a href="mailto:alemuchamada@gmail.com"
+                    className="text-xs hover:text-white transition-colors break-all">
+                    alemuchamada@gmail.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-2.5" style={{ color: "#9ca3af" }}>
+                  <Phone className="h-4 w-4 flex-shrink-0" style={{ color: "#34d399" }} />
+                  <a href="tel:+251956047594" className="text-xs hover:text-white transition-colors">
+                    +251 95 604 7594
+                  </a>
+                </div>
+                <div className="flex items-start gap-2.5" style={{ color: "#9ca3af" }}>
+                  <Map className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: "#34d399" }} />
+                  <span className="text-xs leading-relaxed">
+                    ASTU · Computer Science &amp; Engineering<br />
+                    Addis Ababa, Ethiopia
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">© 2026 SmartTransport · Built by Alemu Chamada</p>
+
+          {/* Bottom bar */}
+          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+            style={{ borderTop: "1px solid #1f2937" }}>
+            <p className="text-xs" style={{ color: "#4b5563" }}>
+              © 2026 SmartTransport · Built by Alemu Chamada · ASTU
+            </p>
             <div className="flex gap-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
+              <a href="#" className="text-xs transition-colors hover:text-white" style={{ color: "#4b5563" }}>
+                Privacy Policy
+              </a>
+              <a href="#" className="text-xs transition-colors hover:text-white" style={{ color: "#4b5563" }}>
+                Terms of Service
+              </a>
             </div>
           </div>
+
         </div>
       </footer>
     </div>
