@@ -1,0 +1,74 @@
+services:
+  - type: web
+    name: tms-backend
+    runtime: node
+    region: oregon          # choose the region closest to your Neon database
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    autoDeploy: true        # redeploy automatically on every push to main
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: "5002"
+
+      # ── Database (Neon) ─────────────────────────────────────────────────
+      - key: DATABASE_URL
+        sync: false         # set manually in Render dashboard (never committed)
+
+      - key: PGHOST
+        sync: false
+      - key: PGPORT
+        value: "5432"
+      - key: PGDATABASE
+        sync: false
+      - key: PGUSER
+        sync: false
+      - key: PGPASSWORD
+        sync: false
+
+      # ── Redis (Upstash) ─────────────────────────────────────────────────
+      - key: REDIS_URL
+        sync: false
+
+      # ── JWT ─────────────────────────────────────────────────────────────
+      - key: JWT_SECRET
+        generateValue: true # Render auto-generates a secure random value
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1h
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+
+      # ── Session ─────────────────────────────────────────────────────────
+      - key: SESSION_SECRET
+        generateValue: true
+
+      # ── Email (set manually in Render dashboard) ─────────────────────────
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+
+      # ── CORS ─────────────────────────────────────────────────────────────
+      - key: FRONTEND_URL
+        sync: false         # set to your Vercel URL after deploying frontend
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+      # ── Payment ─────────────────────────────────────────────────────────
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+      - key: PAYMENT_SESSION_BASE_URL
+        value: https://payments.example.test/checkout
+
+      # ── OTP / Booking ────────────────────────────────────────────────────
+      - key: OTP_EXPIRES_IN_MINUTES
+        value: "5"
+      - key: BOOKING_RESERVATION_MINUTES
+        value: "15"

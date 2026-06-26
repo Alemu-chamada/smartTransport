@@ -126,6 +126,19 @@ const getBuses = async () => {
   return result.rows;
 };
 
+const createBus = async ({ plate_number, capacity, driver_id }) => {
+  if (!plate_number || !capacity) {
+    throw new ApiError(422, "Plate number and capacity are required.", "VALIDATION_ERROR");
+  }
+  const result = await db.query(
+    `INSERT INTO buses (plate_number, capacity, driver_id, is_active)
+     VALUES ($1, $2, $3, TRUE)
+     RETURNING *`,
+    [plate_number.toUpperCase().trim(), capacity, driver_id || null]
+  );
+  return result.rows[0];
+};
+
 const getDrivers = async () => {
   const result = await db.query(
     `SELECT u.id, u.full_name, u.email, u.phone, u.is_active
@@ -184,6 +197,7 @@ module.exports = {
   getAuditLogs,
   getSystemHealth,
   getBuses,
+  createBus,
   getDrivers,
   getUsers,
 };

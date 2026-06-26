@@ -74,7 +74,8 @@ const createBooking = async ({ user, payload }) => {
   validateCreateBookingPayload(payload);
   await releaseExpiredBookings();
 
-  return db.transaction(async (client) => {
+  // Run booking in transaction - audit log happens AFTER to avoid rollback on audit failure
+  const booking = await db.transaction(async (client) => {
     const trip = await tripService.findScheduledTripById(payload.trip_id, client);
     if (!trip) {
       throw new ApiError(404, "Scheduled trip not found.", "TRIP_NOT_FOUND");
@@ -107,23 +108,49 @@ const createBooking = async ({ user, payload }) => {
         getReservationExpiry(),
         payload.idempotency_key
       ]
-    );
+    ).catch(async (err) => {
+      // Handle unique constraint violation — user already has an active booking on this trip
+      if (err.code === '23P01' || err.message?.includes('bookings_one_active_per_passenger')) {
+        throw new ApiError(
+          409,
+          "You already have an active booking for this trip. Check My Bookings.",
+          "DUPLICATE_BOOKING"
+        );
+      }
+      // Handle seat already taken
+      if (err.code === '23P01' || err.message?.includes('bookings_seat_lock')) {
+        throw new ApiError(
+          409,
+          "This seat was just taken by another passenger. Please select a different seat.",
+          "SEAT_TAKEN"
+        );
+      }
+      throw err;
+    });
 
-    const booking = mapBooking(bookingResult.rows[0]);
+    return mapBooking(bookingResult.rows[0]);
+  });
 
+  // Audit log OUTSIDE transaction - failure here won't roll back the booking
+  try {
     await auditService.log({
       actorId: user.id,
-      targetUserId: user.id,
       action: auditService.AUDIT_ACTIONS.BOOKING_CREATED,
+      entityType: "booking",
+      entityId: booking.id,
       metadata: {
         booking_id: booking.id,
-        trip_id: trip.id,
+        trip_id: payload.trip_id,
         seat_number: payload.seat_number
       }
-    }, client);
+    });
+  } catch (auditError) {
+    // Audit failure should never block booking creation
+    const logger = require("../../../shared/utils/logger.js");
+    logger.error("Audit log failed for booking creation", { error: auditError.message, booking_id: booking.id });
+  }
 
-    return booking;
-  });
+  return booking;
 };
 
 const getMyBookings = async (user) => {
@@ -144,40 +171,33 @@ const getMyBookings = async (user) => {
 
 const cancelBooking = async ({ user, bookingId }) => {
   await releaseExpiredBookings();
-  return db.transaction(async (client) => {
+
+  const booking = await db.transaction(async (client) => {
     const booking = await getBookingById(bookingId, client);
-    if (!booking) {
-      throw new ApiError(404, "Booking not found.", "BOOKING_NOT_FOUND");
-    }
-    if (booking.passenger_id !== user.id) {
-      throw new ApiError(403, "Only the booking owner can cancel this booking.", "FORBIDDEN");
-    }
-    if (booking.status === 'confirmed') {
-      throw new ApiError(403, "Confirmed bookings cannot be canceled.", "FORBIDDEN");
-    }
-    if (!['reserved', 'payment_pending'].includes(booking.status)) {
-      throw new ApiError(422, "Booking cannot be canceled in its current state.", "INVALID_STATE");
-    }
+    if (!booking) throw new ApiError(404, "Booking not found.", "BOOKING_NOT_FOUND");
+    if (booking.passenger_id !== user.id) throw new ApiError(403, "Only the booking owner can cancel this booking.", "FORBIDDEN");
+    if (booking.status === 'confirmed') throw new ApiError(403, "Confirmed bookings cannot be canceled.", "FORBIDDEN");
+    if (!['reserved', 'payment_pending'].includes(booking.status)) throw new ApiError(422, "Booking cannot be canceled in its current state.", "INVALID_STATE");
+
     await client.query(
-      `
-      UPDATE bookings
-      SET status = $2,
-          updated_at = now()
-      WHERE id = $1
-      `,
+      `UPDATE bookings SET status = $2, updated_at = now() WHERE id = $1`,
       [bookingId, 'failed']
     );
-    await auditService.log({
-      actorId: user.id,
-      targetUserId: user.id,
-      action: auditService.AUDIT_ACTIONS.BOOKING_CANCELED,
-      metadata: {
-        booking_id: bookingId,
-        trip_id: booking.trip_id
-      }
-    }, client);
     return getBookingById(bookingId, client);
   });
+
+  // Audit outside transaction
+  try {
+    await auditService.log({
+      actorId: user.id,
+      action: auditService.AUDIT_ACTIONS.BOOKING_CANCELLED,
+      entityType: "booking",
+      entityId: bookingId,
+      metadata: { booking_id: bookingId, trip_id: booking.trip_id }
+    });
+  } catch (e) {}
+
+  return booking;
 };
 
 module.exports = {

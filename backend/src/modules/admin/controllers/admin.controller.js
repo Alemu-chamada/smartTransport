@@ -50,6 +50,14 @@ const getBuses = asyncHandler(async (req, res) => {
   });
 });
 
+const createBus = asyncHandler(async (req, res) => {
+  const bus = await adminService.createBus(req.body);
+  return success(res, {
+    message: "Bus created successfully",
+    data: { bus }
+  });
+});
+
 const getDrivers = asyncHandler(async (req, res) => {
   const drivers = await adminService.getDrivers();
   return success(res, {
@@ -72,6 +80,7 @@ module.exports = {
   getAuditLogs,
   getHealth,
   getBuses,
+  createBus,
   getDrivers,
   getUsers,
 };

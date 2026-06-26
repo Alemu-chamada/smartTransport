@@ -103,6 +103,35 @@ test-*.ts
 *.temp
 
 # ----------------------------
+# Large binary / media files
+# Use a CDN or cloud storage (S3, Cloudinary, etc.) instead
+# ----------------------------
+*.mp4
+*.mp3
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wav
+*.ogg
+*.flac
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.pdf
+*.psd
+*.ai
+*.sketch
+frontend/public/*.mp4
+frontend/public/*.webm
+frontend/dist/
+# Root-level large files
+TMS\ project\ plan.pdf
+13979826_1080_1920_60fps.mp4
+
+# ----------------------------
 # IDE / Editor
 # ----------------------------
 .vscode/

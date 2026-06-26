@@ -147,11 +147,10 @@ The **Smart Transportation Management System (TMS)** digitalises and streamlines
 │       └── config/                 Environment configuration
 │
 ├── 🚀 deployment/                  Production config templates
-│   ├── .env.backend.production.template
-│   ├── .env.frontend.production.template
-│   ├── vercel.json
-│   ├── neon-database-setup.sql
-│   └── generate-secrets.js
+│   ├── neon-database-setup.sql     Fix ownership + verify migration
+│   ├── database-validation.sql     Production readiness queries
+│   ├── neon-db-config.js           Neon-ready db.js reference
+│   └── DEPLOYMENT_GUIDE.md         Step-by-step deploy guide
 │
 └── 🗄️  TMSDB.sql                   Full PostgreSQL schema v3.1
 ```
@@ -166,7 +165,7 @@ The **Smart Transportation Management System (TMS)** digitalises and streamlines
 ✅ Node.js 18+
 ✅ PostgreSQL 15+  (or a Neon account)
 ✅ Redis           (or an Upstash account)
-✅ Brevo account   (free — 300 emails/day)
+✅ Gmail account   (App Password for OTP emails)
 ```
 
 ### 1️⃣ Clone the repository
@@ -196,15 +195,24 @@ Key variables:
 NODE_ENV=development
 PORT=5002
 
+# Option A — Neon connection string (production)
+DATABASE_URL=postgresql://[user]:[pass]@[host]/[db]?sslmode=require
+
+# Option B — individual params (local)
 PGHOST=localhost
-PGDATABASE=your_db
-PGUSER=your_user
+PGDATABASE=TMSDB
+PGUSER=postgres
 PGPASSWORD=your_password
 
 JWT_SECRET=your_64_char_random_secret
+JWT_REFRESH_SECRET=your_64_char_random_refresh_secret
 
-BREVO_API_KEY=your_brevo_api_key
-OTP_EXPIRES_IN_MINUTES=10
+# Email OTP — Gmail App Password
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-16-digit-app-password
+
+OTP_EXPIRES_IN_MINUTES=5
+FRONTEND_URL=http://localhost:5173
 ```
 
 ### 4️⃣ Start the backend
@@ -233,7 +241,7 @@ npm run dev
 
 ```
 ┌─────────────┐     HTTPS      ┌─────────────────┐     SQL      ┌────────────────┐
-│   Vercel    │ ─────────────► │    Railway      │ ────────────► │  Neon Postgres │
+│   Vercel    │ ─────────────► │    Render       │ ────────────► │  Neon Postgres │
 │  Frontend   │                │  Node.js API    │              │   Database     │
 └─────────────┘                └────────┬────────┘              └────────────────┘
                                         │ Redis
@@ -244,14 +252,36 @@ npm run dev
                                 └───────────────┘
 ```
 
-| Service | Platform | URL |
+| Service | Platform | Notes |
 |---|---|---|
-| 🎨 Frontend | Vercel | [smart-transport-19ii-sage.vercel.app](https://smart-transport-19ii-sage.vercel.app) |
-| ⚙️ Backend API | Railway | [smarttransport-production.up.railway.app](https://smarttransport-production.up.railway.app) |
-| 🗄️ Database | Neon PostgreSQL | Serverless PostgreSQL with SSL |
-| 🔴 Cache | Upstash Redis | TLS Redis via `REDIS_URL` |
+| 🎨 Frontend | [Vercel](https://vercel.com) | Root: `frontend/` · Build: `npm run build` |
+| ⚙️ Backend API | [Render](https://render.com) | Root: `backend/` · Start: `npm start` |
+| 🗄️ Database | [Neon](https://neon.tech) | Serverless PostgreSQL with SSL required |
+| 🔴 Cache | [Upstash](https://upstash.com) | Serverless Redis via `rediss://` URL |
+| 📧 Email OTP | Gmail SMTP | App Password via `EMAIL_USER` / `EMAIL_PASS` |
 
-Production templates are in `deployment/`.
+### Deployment Steps
+
+**1. Database → Neon**
+```bash
+# Import schema
+psql "postgresql://[neon-connection-string]" -f TMSDB.sql
+# Fix ownership & validate
+psql "postgresql://[neon-connection-string]" -f deployment/neon-database-setup.sql
+psql "postgresql://[neon-connection-string]" -f deployment/database-validation.sql
+```
+
+**2. Backend → Render**
+- New Web Service → connect repo → Root: `backend` → Build: `npm install` → Start: `npm start`
+- Set environment variables (see `backend/.env.example`)
+- Set `DATABASE_URL` to Neon connection string
+- Set `FRONTEND_URL` to your Vercel URL after step 3
+
+**3. Frontend → Vercel**
+- Import repo → Root: `frontend` → Framework: Vite
+- Add env var: `VITE_API_URL=https://your-backend.onrender.com/api/v1`
+
+Production config files are in `deployment/`.
 
 ---
 
@@ -298,7 +328,7 @@ The full PostgreSQL schema is in `TMSDB.sql` (v3.1). Key tables:
 
 ```
 ✅ JWT stateless auth — no server-side sessions
-✅ OTP 2FA on every login — email via Brevo
+✅ OTP 2FA on every login — email via Gmail SMTP
 ✅ Bcrypt password hashing (work factor 12)
 ✅ Account lockout after 5 failed attempts
 ✅ Role-based access — server + client enforced

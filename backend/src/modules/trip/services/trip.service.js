@@ -51,8 +51,8 @@ const createTrip = async ({ actor, payload }) => {
 
     const tripResult = await client.query(
       `
-      INSERT INTO trips (bus_id, driver_id, route_description, origin, destination, scheduled_start_time, status, total_capacity, avg_speed_kmh)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      INSERT INTO trips (bus_id, driver_id, route_description, origin, destination, fare, currency, scheduled_start_time, status, total_capacity, avg_speed_kmh)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *
       `,
       [
@@ -61,6 +61,8 @@ const createTrip = async ({ actor, payload }) => {
         payload.route_description,
         payload.origin,
         payload.destination,
+        payload.fare || 0,
+        payload.currency || 'ETB',
         new Date(payload.scheduled_start_time),
         payload.status || 'scheduled',
         payload.total_capacity,

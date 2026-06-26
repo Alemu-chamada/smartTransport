@@ -1,10 +1,18 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
 
-let token: string | null = null;
+const TOKEN_KEY = "tms_access_token";
+
+// Load token from localStorage on startup
+let token: string | null = localStorage.getItem(TOKEN_KEY);
 
 export const apiService = {
   setToken: (newToken: string | null) => {
     token = newToken;
+    if (newToken) {
+      localStorage.setItem(TOKEN_KEY, newToken);
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+    }
   },
 
   getToken: () => token,

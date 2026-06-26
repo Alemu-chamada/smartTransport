@@ -5,7 +5,7 @@ import { MainLayout } from "../routes/MainLayout";
 import { Card } from "../shared/ui/Card";
 import { Button } from "../shared/ui/Button";
 import { Input } from "../shared/ui/Input";
-import { MapPin, Clock, Users, Search, Loader2, ArrowLeftRight, Calendar, DollarSign } from "lucide-react";
+import { MapPin, Clock, Users, Search, Loader2, ArrowLeftRight, Calendar } from "lucide-react";
 import { tripApi, type Trip } from "../features/trip/services";
 
 export function TripDiscovery() {
@@ -139,54 +139,75 @@ export function TripDiscovery() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.15 + index * 0.07 }}
+                onClick={() => navigate(`/trip/${trip.id}`)}
+                className="cursor-pointer"
               >
-                <Card className="p-6" hover>
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="h-9 w-9 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <MapPin className="h-4.5 w-4.5 text-primary" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-bold text-foreground text-lg">{trip.origin} → {trip.destination}</p>
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold">
+                <Card className="overflow-hidden" hover>
+                  {/* Gradient accent bar */}
+                  <div className="h-[3px] bg-gradient-to-r from-indigo-500 via-violet-500 to-emerald-400" />
+                  <div className="p-6">
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                      <div className="flex-1 space-y-4">
+                        {/* Route with dot indicators */}
+                        <div className="flex items-start gap-3">
+                          <div className="flex flex-col items-center gap-1 pt-1 flex-shrink-0">
+                            <div className="h-3 w-3 rounded-full bg-indigo-500 ring-2 ring-indigo-200" />
+                            <div className="w-px h-6 border-l-2 border-dashed border-muted-foreground/40" />
+                            <div className="h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-emerald-200" />
+                          </div>
+                          <div className="space-y-2">
+                            <p className="font-bold text-foreground text-base leading-tight">{trip.origin}</p>
+                            <p className="font-bold text-foreground text-base leading-tight">{trip.destination}</p>
+                          </div>
+                          {/* Status badge */}
+                          <div className="ml-auto flex-shrink-0">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold">
+                              <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
                               Scheduled
                             </span>
                           </div>
-                          {trip.route_description && (
-                            <p className="text-sm text-muted-foreground mt-0.5">{trip.route_description}</p>
-                          )}
+                        </div>
+
+                        {trip.route_description && (
+                          <p className="text-sm text-muted-foreground">{trip.route_description}</p>
+                        )}
+
+                        {/* Meta chips */}
+                        <div className="flex flex-wrap gap-2">
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{formatDate(trip.scheduled_start_time)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{formatTime(trip.scheduled_start_time)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                            <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="font-medium text-foreground">{trip.total_capacity} seats</span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-4 text-sm pl-12">
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          <span className="text-foreground font-medium">{formatDate(trip.scheduled_start_time)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          <span className="text-foreground font-medium">{formatTime(trip.scheduled_start_time)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
-                          <Users className="h-4 w-4" />
-                          <span className="text-foreground font-medium">{trip.total_capacity} seats</span>
-                        </div>
+                      {/* Fare + CTA */}
+                      <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-4 lg:gap-3 lg:min-w-[140px]">
                         {trip.fare != null && (
-                          <div className="flex items-center gap-1.5">
-                            <DollarSign className="h-4 w-4 text-emerald-600" />
-                            <span className="font-semibold text-emerald-700">
-                              {trip.currency || "ETB"} {trip.fare.toLocaleString()} / seat
-                            </span>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground mb-0.5">Fare per seat</p>
+                            <p className="text-2xl font-bold text-foreground leading-tight">
+                              {trip.currency || "ETB"} {trip.fare.toLocaleString()}
+                            </p>
                           </div>
                         )}
+                        <Button
+                          onClick={(e) => { e.stopPropagation(); navigate(`/trip/${trip.id}`); }}
+                          variant="primary"
+                          size="md"
+                        >
+                          Book Now
+                        </Button>
                       </div>
                     </div>
-
-                    <Button onClick={() => navigate(`/trip/${trip.id}`)} variant="primary">
-                      View Details
-                    </Button>
                   </div>
                 </Card>
               </motion.div>

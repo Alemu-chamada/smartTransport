@@ -32,127 +32,80 @@ const initializeBrevo = () => {
 };
 
 const generateOtpEmailHtml = (otp) => {
-  return `
-<!DOCTYPE html>
+  const digits = String(otp).split('');
+  const digitBoxes = digits.map(d =>
+    `<span style="display:inline-block;width:44px;height:56px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#4f46e5;background:#f0f0ff;border:2px solid #c7d2fe;border-radius:10px;margin:0 4px;font-family:'Courier New',monospace;">${d}</span>`
+  ).join('');
+
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OTP Verification</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f7fa;
-      margin: 0;
-      padding: 0;
-    }
-    .email-container {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-    .email-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #ffffff;
-      text-align: center;
-      padding: 30px 20px;
-    }
-    .email-header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-    }
-    .email-header .icon {
-      font-size: 48px;
-      margin-bottom: 10px;
-    }
-    .email-body {
-      padding: 40px 30px;
-      color: #333333;
-      line-height: 1.6;
-    }
-    .email-body h2 {
-      color: #667eea;
-      margin-top: 0;
-      font-size: 22px;
-    }
-    .otp-box {
-      background-color: #f8f9ff;
-      border: 2px solid #667eea;
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-      margin: 30px 0;
-    }
-    .otp-code {
-      font-size: 36px;
-      font-weight: bold;
-      color: #667eea;
-      letter-spacing: 8px;
-      font-family: 'Courier New', monospace;
-    }
-    .security-note {
-      background-color: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 15px;
-      margin: 20px 0;
-      border-radius: 4px;
-    }
-    .security-note strong {
-      color: #856404;
-    }
-    .email-footer {
-      background-color: #f8f9fa;
-      color: #6c757d;
-      text-align: center;
-      padding: 25px 20px;
-      font-size: 14px;
-      border-top: 1px solid #e9ecef;
-    }
-    .email-footer .motivational {
-      color: #667eea;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-    .email-footer .closing {
-      margin-top: 15px;
-      font-style: italic;
-    }
-  </style>
+  <title>Smart Transport — Verification Code</title>
 </head>
-<body>
-  <div class="email-container">
-    <div class="email-header">
-      <div class="icon">🚍</div>
-      <h1>Transportation Management System</h1>
-    </div>
-    <div class="email-body">
-      <h2>Hello,</h2>
-      <p>Welcome to the <strong>Transportation Management System</strong>.</p>
-      <p>Your verification code is:</p>
-      <div class="otp-box">
-        <div class="otp-code">${otp}</div>
-      </div>
-      <div class="security-note">
-        <strong>Security Note:</strong> This code expires in <strong>5 minutes</strong>. Do not share this code with anyone.
-      </div>
-      <p>If you did not request this code, please ignore this email or contact support if you have concerns.</p>
-    </div>
-    <div class="email-footer">
-      <div class="motivational">
-        Connecting people, simplifying transportation, and building smarter journeys every day.
-      </div>
-      <div class="closing">
-        Thank you for using Transportation Management System.
-      </div>
-    </div>
-  </div>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);border-radius:20px 20px 0 0;padding:40px 40px 32px;text-align:center;">
+            <div style="font-size:52px;margin-bottom:12px;">🚌</div>
+            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.3px;">Smart Transport System</h1>
+            <p style="margin:6px 0 0;color:rgba(255,255,255,0.7);font-size:14px;">Your journey, secured.</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="background:#ffffff;padding:40px 40px 32px;">
+            <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#6366f1;text-transform:uppercase;letter-spacing:1px;">Security Verification</p>
+            <h2 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0f172a;">Here's your one-time code</h2>
+            <p style="margin:0 0 28px;font-size:15px;color:#64748b;line-height:1.6;">Use the code below to verify your identity and continue. It was made just for you and expires in <strong style="color:#0f172a;">5 minutes</strong>.</p>
+
+            <!-- OTP Digits -->
+            <div style="text-align:center;margin:0 0 28px;padding:28px 20px;background:#fafafa;border-radius:16px;border:1px solid #e2e8f0;">
+              ${digitBoxes}
+              <p style="margin:16px 0 0;font-size:12px;color:#94a3b8;">Single-use code · Expires in 5 minutes</p>
+            </div>
+
+            <!-- Security Alert -->
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:10px;padding:16px 20px;margin-bottom:28px;">
+              <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
+                🔒 <strong>Never share this code</strong> with anyone — not even our team. Smart Transport will <em>never</em> ask for your OTP by phone or email.
+              </p>
+            </div>
+
+            <p style="margin:0;font-size:14px;color:#94a3b8;line-height:1.6;">If you didn't request this code, you can safely ignore this email. No action is needed.</p>
+          </td>
+        </tr>
+
+        <!-- Divider with tagline -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);padding:24px 40px;text-align:center;">
+            <p style="margin:0;color:rgba(255,255,255,0.9);font-size:14px;font-weight:500;font-style:italic;">
+              "Connecting people, simplifying journeys, building smarter transportation — every day."
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8fafc;border-radius:0 0 20px 20px;padding:24px 40px;text-align:center;border:1px solid #e2e8f0;border-top:none;">
+            <p style="margin:0 0 4px;font-size:13px;color:#475569;font-weight:600;">Smart Transport Management System</p>
+            <p style="margin:0;font-size:12px;color:#94a3b8;">
+              <a href="mailto:smarttransportserv@gmail.com" style="color:#6366f1;text-decoration:none;">smarttransportserv@gmail.com</a>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
 </body>
-</html>
-  `;
+</html>`;
 };
 
 const sendOtpEmail = async ({ to, otp }) => {

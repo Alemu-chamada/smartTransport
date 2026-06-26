@@ -1,7 +1,7 @@
 {
   "name": "smart-transport-root",
   "private": true,
-  "description": "Monorepo root — backend runs from /backend, frontend runs from /frontend",
+  "description": "Monorepo root - backend in /backend, frontend in /frontend",
   "scripts": {
     "start": "cd backend && node src/server.js",
     "build": "cd backend && npm install"

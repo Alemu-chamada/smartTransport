@@ -421,7 +421,7 @@ const resendOtp = async ({ email, phone, purpose }) => {
 
   await auditService.log({
     actorId: user.id,
-    action: "OTP_RESENT",
+    action: "OTP_SENT",
     entityType: "auth",
     metadata: { purpose },
   });

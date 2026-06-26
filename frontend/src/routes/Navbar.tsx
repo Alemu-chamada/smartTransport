@@ -7,6 +7,7 @@ import { authApi } from '../features/auth/services';
 import { userApi } from '../features/user/services';
 import { notificationApi, type Notification } from '../features/notification/services';
 import { Input } from '../shared/ui/Input';
+import { Logo } from '../shared/ui/Logo';
 
 type OTPAction = 'change_email' | 'change_phone' | 'change_password' | null;
 
@@ -112,7 +113,7 @@ export function Navbar() {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      navigate('/signin');
+      navigate('/');
       setDropdownOpen(false);
     }
   };

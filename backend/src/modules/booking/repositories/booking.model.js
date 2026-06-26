@@ -8,6 +8,7 @@ const mapBooking = (row) => {
     status: row.status,
     expires_at: row.expires_at,
     idempotency_key: row.idempotency_key,
+    trip: row.trip || null,  // joined trip data
     created_at: row.created_at,
     updated_at: row.updated_at
   };

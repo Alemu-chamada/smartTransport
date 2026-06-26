@@ -14,7 +14,7 @@
 
 -- Fix table ownership
 DO $$
-DECLARE
+DECLAREi
     r RECORD;
 BEGIN
     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
