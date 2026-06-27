@@ -54,8 +54,8 @@ export function ContactPage() {
       {/* Contact Cards */}
       <section className="py-8 pb-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Desktop: side by side. Mobile: stacked. */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Always vertical stack — System first, Developer below */}
+          <div className="flex flex-col gap-8 max-w-2xl mx-auto">
 
             {/* System Card */}
             <motion.div
@@ -152,12 +152,6 @@ export function ContactPage() {
             </motion.div>
           </div>
 
-          {/* Mobile bus divider (visible only between stacked cards) */}
-          <div className="md:hidden flex items-center justify-center gap-3 py-4">
-            <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${C.red}40)` }} />
-            <Bus className="h-5 w-5" style={{ color: C.red }} />
-            <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${C.red}40, transparent)` }} />
-          </div>
         </div>
       </section>
 

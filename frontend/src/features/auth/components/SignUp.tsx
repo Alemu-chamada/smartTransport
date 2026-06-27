@@ -120,7 +120,7 @@ export function SignUp() {
               {errors.firstName && <p className="mt-1 text-xs text-[#FD1843]">{errors.firstName}</p>}
             </div>
             <div>
-              <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Last Name</label>
+              <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}>Last Name</label>
               <input
                 name="lastName"
                 value={formData.lastName}
@@ -134,7 +134,7 @@ export function SignUp() {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Email</label>
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}>Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -151,7 +151,7 @@ export function SignUp() {
 
           {/* Phone */}
           <div>
-            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}>
               Phone <span className="text-muted-foreground font-normal">(optional if email given)</span>
             </label>
             <div className="relative">
@@ -170,7 +170,7 @@ export function SignUp() {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Password</label>
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}>Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -201,7 +201,7 @@ export function SignUp() {
 
           {/* Confirm password */}
           <div>
-            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Confirm Password</label>
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}>Confirm Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
