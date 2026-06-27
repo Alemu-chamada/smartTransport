@@ -85,20 +85,18 @@ export function SignUp() {
 
   return (
     <AuthLayout>
-      <div className="bg-card rounded-3xl shadow-xl border border-border p-8">
+      <div>
         {/* Header */}
         <div className="mb-7">
-          <h1 className="text-3xl font-bold text-foreground">Create account</h1>
-          <p className="text-muted-foreground mt-1">Join Smart Transport today — it's free</p>
+          <h1 className="text-3xl font-black" style={{ color: "#001621" }}>Create account</h1>
+          <p className="mt-1 text-sm" style={{ color: "#6b7280" }}>Join Smart Transport today — it's free</p>
         </div>
 
         {/* Error banner */}
         {errors.general && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-5 flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-2xl text-destructive text-sm"
-          >
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-5 flex items-start gap-3 p-4 rounded-2xl text-sm font-semibold"
+            style={{ backgroundColor: "rgba(253,24,67,0.08)", border: "1px solid rgba(253,24,67,0.2)", color: "#FD1843" }}>
             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>{errors.general}</span>
           </motion.div>
@@ -108,7 +106,7 @@ export function SignUp() {
           {/* Name row */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">First Name</label>
+              <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}>First Name</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <input
@@ -116,27 +114,27 @@ export function SignUp() {
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="First"
-                  className={`w-full pl-9 pr-3 py-2.5 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all ${errors.firstName ? "border-destructive" : "border-border"}`}
+                  className={`w-full pl-9 pr-3 py-2.5 rounded-xl border bg-white text-[#001621] placeholder:text-gray-400 focus:outline-none focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20 text-sm transition-all ${errors.firstName ? "border-[#FD1843]" : "border-border"}`}
                 />
               </div>
-              {errors.firstName && <p className="mt-1 text-xs text-destructive">{errors.firstName}</p>}
+              {errors.firstName && <p className="mt-1 text-xs text-[#FD1843]">{errors.firstName}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Last Name</label>
+              <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Last Name</label>
               <input
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Last"
-                className={`w-full px-3 py-2.5 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all ${errors.lastName ? "border-destructive" : "border-border"}`}
+                className={`w-full px-3 py-2.5 rounded-xl border bg-white text-[#001621] placeholder:text-gray-400 focus:outline-none focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20 text-sm transition-all ${errors.lastName ? "border-[#FD1843]" : "border-border"}`}
               />
-              {errors.lastName && <p className="mt-1 text-xs text-destructive">{errors.lastName}</p>}
+              {errors.lastName && <p className="mt-1 text-xs text-[#FD1843]">{errors.lastName}</p>}
             </div>
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Email</label>
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -145,15 +143,15 @@ export function SignUp() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className={`w-full pl-9 pr-3 py-2.5 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all ${errors.email ? "border-destructive" : "border-border"}`}
+                className={`w-full pl-9 pr-3 py-2.5 rounded-xl border bg-white text-[#001621] placeholder:text-gray-400 focus:outline-none focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20 text-sm transition-all ${errors.email ? "border-[#FD1843]" : "border-border"}`}
               />
             </div>
-            {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
+            {errors.email && <p className="mt-1 text-xs text-[#FD1843]">{errors.email}</p>}
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">
               Phone <span className="text-muted-foreground font-normal">(optional if email given)</span>
             </label>
             <div className="relative">
@@ -164,15 +162,15 @@ export function SignUp() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+251 91 123 4567"
-                className={`w-full pl-9 pr-3 py-2.5 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all ${errors.phone ? "border-destructive" : "border-border"}`}
+                className={`w-full pl-9 pr-3 py-2.5 rounded-xl border bg-white text-[#001621] placeholder:text-gray-400 focus:outline-none focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20 text-sm transition-all ${errors.phone ? "border-[#FD1843]" : "border-border"}`}
               />
             </div>
-            {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
+            {errors.phone && <p className="mt-1 text-xs text-[#FD1843]">{errors.phone}</p>}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Password</label>
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -182,7 +180,7 @@ export function SignUp() {
                 onChange={handleChange}
                 placeholder="Min. 8 characters"
                 autoComplete="new-password"
-                className={`w-full pl-9 pr-10 py-2.5 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all ${errors.password ? "border-destructive" : "border-border"}`}
+                className={`w-full pl-9 pr-10 py-2.5 rounded-xl border bg-white text-[#001621] placeholder:text-gray-400 focus:outline-none focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20 text-sm transition-all ${errors.password ? "border-[#FD1843]" : "border-border"}`}
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -192,18 +190,18 @@ export function SignUp() {
             {/* Strength bar */}
             {strength && (
               <div className="mt-2">
-                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#f1f5f9" }}>
                   <div className={`h-full rounded-full transition-all ${strength.color} ${strength.width}`} />
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">{strength.label}</p>
+                <p className="mt-1 text-xs font-semibold" style={{ color: "#9ca3af" }}>{strength.label}</p>
               </div>
             )}
-            {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password}</p>}
+            {errors.password && <p className="mt-1 text-xs text-[#FD1843]">{errors.password}</p>}
           </div>
 
           {/* Confirm password */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Confirm Password</label>
+            <label className="block text-sm font-bold mb-1.5" style={{ color: "#001621" }}">Confirm Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <input
@@ -213,7 +211,7 @@ export function SignUp() {
                 onChange={handleChange}
                 placeholder="Confirm your password"
                 autoComplete="new-password"
-                className={`w-full pl-9 pr-10 py-2.5 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm transition-all ${errors.confirmPassword ? "border-destructive" : "border-border"}`}
+                className={`w-full pl-9 pr-10 py-2.5 rounded-xl border bg-white text-[#001621] placeholder:text-gray-400 focus:outline-none focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20 text-sm transition-all ${errors.confirmPassword ? "border-[#FD1843]" : "border-border"}`}
               />
               <button type="button" onClick={() => setShowConfirm(!showConfirm)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -224,15 +222,13 @@ export function SignUp() {
                 <CheckCircle2 className="absolute right-9 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
               )}
             </div>
-            {errors.confirmPassword && <p className="mt-1 text-xs text-destructive">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="mt-1 text-xs text-[#FD1843]">{errors.confirmPassword}</p>}
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-2"
-          >
+          <button type="submit" disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            style={{ backgroundColor: "#FF4103", boxShadow: "0 4px 16px rgba(255,65,3,0.35)" }}>
             {loading ? (
               <span className="flex items-center gap-2">
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -251,18 +247,20 @@ export function SignUp() {
         </form>
 
         <div className="my-5 flex items-center gap-3">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground">Already have an account?</span>
-          <div className="flex-1 h-px bg-border" />
+          <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
+          <span className="text-xs font-medium" style={{ color: "#9ca3af" }}>Already have an account?</span>
+          <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
         </div>
 
-        <Link
-          to="/signin"
-          className="w-full flex items-center justify-center py-3 px-6 rounded-xl border-2 border-border text-foreground font-medium text-sm hover:bg-muted transition-colors"
-        >
+        <Link to="/signin"
+          className="w-full flex items-center justify-center py-3 px-6 rounded-xl border-2 font-bold text-sm transition-colors hover:bg-gray-50"
+          style={{ borderColor: "#e5e7eb", color: "#001621" }}>
           Sign in instead
         </Link>
       </div>
     </AuthLayout>
   );
 }
+
+
+

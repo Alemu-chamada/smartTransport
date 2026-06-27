@@ -50,20 +50,18 @@ export function SignIn() {
 
   return (
     <AuthLayout>
-      <div className="bg-card rounded-3xl shadow-xl border border-border p-8">
+      <div>
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
-          <p className="text-muted-foreground mt-1">Sign in to continue your journey</p>
+          <h1 className="text-3xl font-black" style={{ color: "#001621" }}>Welcome back</h1>
+          <p className="mt-1 text-sm" style={{ color: "#6b7280" }}>Sign in to continue your journey</p>
         </div>
 
         {/* Error banner */}
         {errors.general && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-2xl text-destructive text-sm"
-          >
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-6 flex items-start gap-3 p-4 rounded-2xl text-sm font-semibold"
+            style={{ backgroundColor: "rgba(253,24,67,0.08)", border: "1px solid rgba(253,24,67,0.2)", color: "#FD1843" }}>
             <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>{errors.general}</span>
           </motion.div>
@@ -72,64 +70,49 @@ export function SignIn() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email / Phone */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="block text-sm font-bold mb-2" style={{ color: "#001621" }}>
               Email or Phone
             </label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: "#9ca3af" }} />
               <input
-                name="emailOrPhone"
-                value={formData.emailOrPhone}
-                onChange={handleChange}
-                placeholder="you@example.com or phone number"
-                autoComplete="username"
-                className={`w-full pl-11 pr-4 py-3 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all ${
-                  errors.emailOrPhone ? "border-destructive" : "border-border"
-                }`}
+                name="emailOrPhone" value={formData.emailOrPhone} onChange={handleChange}
+                placeholder="you@example.com or phone number" autoComplete="username"
+                className={`w-full pl-11 pr-4 py-3 rounded-xl border bg-white text-sm transition-all
+                  focus:outline-none placeholder:text-gray-400 text-[#001621]
+                  ${errors.emailOrPhone ? "border-[#FD1843]" : "border-gray-200 hover:border-gray-300 focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20"}`}
               />
             </div>
-            {errors.emailOrPhone && (
-              <p className="mt-1.5 text-xs text-destructive">{errors.emailOrPhone}</p>
-            )}
+            {errors.emailOrPhone && <p className="mt-1.5 text-xs font-semibold text-[#FD1843]">{errors.emailOrPhone}</p>}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="block text-sm font-bold mb-2" style={{ color: "#001621" }}>
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: "#9ca3af" }} />
               <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                className={`w-full pl-11 pr-12 py-3 rounded-xl border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all ${
-                  errors.password ? "border-destructive" : "border-border"
-                }`}
+                name="password" type={showPassword ? "text" : "password"} value={formData.password}
+                onChange={handleChange} placeholder="Enter your password" autoComplete="current-password"
+                className={`w-full pl-11 pr-12 py-3 rounded-xl border bg-white text-sm transition-all
+                  focus:outline-none placeholder:text-gray-400 text-[#001621]
+                  ${errors.password ? "border-[#FD1843]" : "border-gray-200 hover:border-gray-300 focus:border-[#21F1A8] focus:ring-2 focus:ring-[#21F1A8]/20"}`}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <button type="button" onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors hover:text-[#001621]"
+                style={{ color: "#9ca3af" }}>
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {errors.password && (
-              <p className="mt-1.5 text-xs text-destructive">{errors.password}</p>
-            )}
+            {errors.password && <p className="mt-1.5 text-xs font-semibold text-[#FD1843]">{errors.password}</p>}
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading || !formData.emailOrPhone || !formData.password}
-            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
+          <button type="submit" disabled={loading || !formData.emailOrPhone || !formData.password}
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "#FF4103", boxShadow: "0 4px 16px rgba(255,65,3,0.35)" }}>
             {loading ? (
               <span className="flex items-center gap-2">
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -139,25 +122,20 @@ export function SignIn() {
                 Sending code…
               </span>
             ) : (
-              <>
-                Send Verification Code
-                <ArrowRight className="h-4 w-4" />
-              </>
+              <>Send Verification Code<ArrowRight className="h-4 w-4" /></>
             )}
           </button>
         </form>
 
-        {/* Divider */}
         <div className="my-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground">New here?</span>
-          <div className="flex-1 h-px bg-border" />
+          <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
+          <span className="text-xs font-medium" style={{ color: "#9ca3af" }}>New here?</span>
+          <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
         </div>
 
-        <Link
-          to="/signup"
-          className="w-full flex items-center justify-center py-3 px-6 rounded-xl border-2 border-border text-foreground font-medium text-sm hover:bg-muted transition-colors"
-        >
+        <Link to="/signup"
+          className="w-full flex items-center justify-center py-3 px-6 rounded-xl border-2 font-bold text-sm transition-colors hover:bg-gray-50"
+          style={{ borderColor: "#e5e7eb", color: "#001621" }}>
           Create an account
         </Link>
       </div>

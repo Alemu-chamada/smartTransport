@@ -129,63 +129,47 @@ export function OTP() {
 
   return (
     <AuthLayout>
-      <div className="bg-card rounded-3xl shadow-xl border border-border p-8">
+      <div>
         {/* Header */}
         <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", duration: 0.6 }}
-            className={`inline-flex h-20 w-20 items-center justify-center rounded-3xl mb-5 shadow-lg transition-colors duration-500 ${
-              verified ? "bg-green-500" : "bg-primary"
-            }`}
-          >
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", duration: 0.6 }}
+            className="inline-flex h-20 w-20 items-center justify-center rounded-3xl mb-5 shadow-lg transition-colors duration-500"
+            style={{ backgroundColor: verified ? "#2BEE34" : "#FF4103",
+                     boxShadow: verified ? "0 0 32px rgba(43,238,52,0.4)" : "0 0 32px rgba(255,65,3,0.4)" }}>
             <AnimatePresence mode="wait">
-              {verified ? (
-                <motion.div key="check" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                  <CheckCircle2 className="h-10 w-10 text-white" />
-                </motion.div>
-              ) : (
-                <motion.div key="shield" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                  <ShieldCheck className="h-10 w-10 text-white" />
-                </motion.div>
-              )}
+              {verified
+                ? <motion.div key="check" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                    <CheckCircle2 className="h-10 w-10 text-white" />
+                  </motion.div>
+                : <motion.div key="shield" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                    <ShieldCheck className="h-10 w-10 text-white" />
+                  </motion.div>}
             </AnimatePresence>
           </motion.div>
-
-          <h1 className="text-2xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl font-black mb-2" style={{ color: "#001621" }}>
             {verified ? "Verified!" : "Check your inbox"}
           </h1>
-          <p className="text-muted-foreground text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed" style={{ color: "#6b7280" }}>
             {verified
               ? "Identity confirmed. Redirecting you now…"
-              : <>We sent a 6-digit code to<br /><span className="font-semibold text-foreground">{maskedContact}</span></>
-            }
+              : <>We sent a 6-digit code to<br /><span className="font-bold" style={{ color: "#001621" }}>{maskedContact}</span></>}
           </p>
         </div>
 
         {/* Alerts */}
         <AnimatePresence>
           {errors.general && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="mb-5 flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-2xl text-destructive text-sm"
-            >
+            <motion.div key="error" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              className="mb-5 flex items-start gap-3 p-4 rounded-2xl text-sm font-semibold"
+              style={{ backgroundColor: "rgba(253,24,67,0.08)", border: "1px solid rgba(253,24,67,0.2)", color: "#FD1843" }}>
               <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
               <span>{errors.general}</span>
             </motion.div>
           )}
           {resendSuccess && (
-            <motion.div
-              key="success"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="mb-5 flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-2xl text-green-700 text-sm"
-            >
+            <motion.div key="success" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              className="mb-5 flex items-start gap-3 p-4 rounded-2xl text-sm font-semibold"
+              style={{ backgroundColor: "rgba(43,238,52,0.08)", border: "1px solid rgba(43,238,52,0.3)", color: "#22a830" }}>
               <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
               <span>New code sent! Check your inbox and spam folder.</span>
             </motion.div>
@@ -193,87 +177,70 @@ export function OTP() {
         </AnimatePresence>
 
         <form onSubmit={handleSubmit}>
-          {/* OTP Inputs */}
+          {/* OTP inputs */}
           <div className="flex gap-2.5 justify-center mb-8">
             {otp.map((digit, i) => (
-              <motion.input
-                key={i}
+              <motion.input key={i}
                 ref={(el) => (inputRefs.current[i] = el)}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
+                type="text" inputMode="numeric" maxLength={1}
                 value={digit}
                 onChange={(e) => handleChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={handlePaste}
                 disabled={loading || verified}
                 whileFocus={{ scale: 1.08 }}
-                className={`w-12 h-14 text-center text-xl font-bold rounded-2xl border-2 bg-background text-foreground focus:outline-none transition-all disabled:opacity-60 ${
-                  digit
-                    ? "border-primary bg-primary/5 text-primary"
-                    : errors.general
-                    ? "border-destructive/50"
-                    : "border-border hover:border-primary/50 focus:border-primary"
-                }`}
+                className="w-12 h-14 text-center text-xl font-black rounded-2xl border-2 transition-all focus:outline-none disabled:opacity-60"
+                style={{
+                  backgroundColor: digit ? "rgba(255,65,3,0.06)" : "#fff",
+                  borderColor: digit ? "#FF4103" : errors.general ? "#FD1843" : "#e5e7eb",
+                  color: digit ? "#FF4103" : "#001621",
+                  boxShadow: digit ? "0 0 0 3px rgba(255,65,3,0.12)" : "none",
+                }}
               />
             ))}
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            disabled={!isComplete || loading || verified}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                </svg>
-                Verifying…
-              </span>
-            ) : verified ? (
-              <span className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4" /> Verified!
-              </span>
-            ) : (
-              "Verify Code"
-            )}
+          <button type="submit" disabled={!isComplete || loading || verified}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "#FF4103", boxShadow: "0 4px 16px rgba(255,65,3,0.35)" }}>
+            {loading
+              ? <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                  </svg>
+                  Verifying…
+                </span>
+              : verified
+              ? <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Verified!</span>
+              : "Verify Code"}
           </button>
         </form>
 
         {/* Resend */}
         <div className="mt-6 text-center">
-          {canResend ? (
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={resendLoading}
-              className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${resendLoading ? "animate-spin" : ""}`} />
-              {resendLoading ? "Sending new code…" : "Resend code"}
-            </button>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Resend code in{" "}
-              <span className="font-semibold text-foreground tabular-nums">
-                {String(Math.floor(countdown / 60)).padStart(2, "0")}:{String(countdown % 60).padStart(2, "0")}
-              </span>
-            </p>
-          )}
+          {canResend
+            ? <button type="button" onClick={handleResend} disabled={resendLoading}
+                className="inline-flex items-center gap-2 text-sm font-bold transition-colors hover:underline disabled:opacity-50"
+                style={{ color: "#FF4103" }}>
+                <RefreshCw className={`h-3.5 w-3.5 ${resendLoading ? "animate-spin" : ""}`} />
+                {resendLoading ? "Sending new code…" : "Resend code"}
+              </button>
+            : <p className="text-sm" style={{ color: "#9ca3af" }}>
+                Resend code in{" "}
+                <span className="font-black tabular-nums" style={{ color: "#001621" }}>
+                  {String(Math.floor(countdown / 60)).padStart(2, "0")}:{String(countdown % 60).padStart(2, "0")}
+                </span>
+              </p>}
         </div>
 
-        {/* Back link */}
+        {/* Back */}
         <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={() => navigate("/signin")}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-3 w-3" />
-            Back to sign in
+          <button type="button" onClick={() => navigate("/signin")}
+            className="inline-flex items-center gap-1.5 text-xs transition-colors hover:underline"
+            style={{ color: "#9ca3af" }}>
+            <ArrowLeft className="h-3 w-3" /> Back to sign in
           </button>
         </div>
       </div>
