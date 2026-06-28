@@ -23,7 +23,8 @@ export function TripDiscovery() {
     try {
       setLoading(true);
       const data = await tripApi.getScheduledTrips();
-      if (data?.trips) setTrips(data.trips);
+      // Only show scheduled trips (created by admin)
+      if (data?.trips) setTrips(data.trips.filter((t: Trip) => t.status === 'scheduled'));
     } catch (error) {
       console.error('Failed to load trips:', error);
     } finally {
@@ -35,7 +36,8 @@ export function TripDiscovery() {
     try {
       setLoading(true);
       const data = await tripApi.getNearbyTrips({ origin: searchFrom, destination: searchTo });
-      if (data?.trips) setTrips(data.trips);
+      // Only show scheduled trips (created by admin)
+      if (data?.trips) setTrips(data.trips.filter((t: Trip) => t.status === 'scheduled'));
     } catch (error) {
       console.error('Failed to search trips:', error);
     } finally {

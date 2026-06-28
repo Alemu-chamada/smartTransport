@@ -25,7 +25,7 @@ export function AboutPage() {
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-10"
             style={{ backgroundColor: C.green }} />
         </div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="w-full max-w-4xl mx-auto px-6 sm:px-10 text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5"
               style={{ backgroundColor: `${C.red}12`, color: C.red }}>How It Works</span>
@@ -44,7 +44,7 @@ export function AboutPage() {
 
       {/* Timeline */}
       <section className="py-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="relative">
             <div className="absolute left-8 top-0 bottom-0 w-0.5 hidden md:block"
               style={{ background: `linear-gradient(to bottom, ${C.red}, ${C.gold}, ${C.green})` }} />
@@ -75,7 +75,7 @@ export function AboutPage() {
 
       {/* About card */}
       <section className="py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="bg-white rounded-3xl p-10 md:p-16 text-center"
             style={{ border: "1px solid rgba(0,22,33,0.07)", boxShadow: "0 8px 40px rgba(0,22,33,0.08)" }}>
@@ -109,7 +109,7 @@ export function AboutPage() {
 
       {/* CTA */}
       <section className="py-16 text-center">
-        <div className="max-w-xl mx-auto px-4">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <h2 className="text-3xl font-black mb-4" style={{ color: C.navy }}>Start your journey today</h2>
           <p className="mb-8" style={{ color: "#6b7280" }}>Create a free account and experience seamless transportation management.</p>
           <Link to="/signup" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white transition-all hover:opacity-90"

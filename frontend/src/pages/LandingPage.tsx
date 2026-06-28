@@ -28,7 +28,7 @@ export function LandingNav({ active }: { active: string }) {
   return (
     <nav className="sticky top-0 z-50 border-b backdrop-blur-xl"
       style={{ backgroundColor: "rgba(255,249,250,0.92)", borderColor: "rgba(0,22,33,0.08)" }}>
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
         <div className="flex items-center justify-between h-16">
           <Logo />
           <div className="hidden md:flex items-center gap-1">
@@ -76,7 +76,7 @@ export function LandingNav({ active }: { active: string }) {
 export function LandingFooter() {
   return (
     <footer className="py-16" style={{ backgroundColor: C.navy }}>
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div>
             <div className="flex items-center gap-2.5 mb-4">
@@ -244,7 +244,7 @@ export function LandingPage() {
           <div className="absolute -bottom-20 -left-20 w-96 h-96 rounded-full blur-3xl opacity-10"
             style={{ backgroundColor: C.green }} />
         </div>
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
             <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-6 uppercase tracking-widest"
@@ -258,7 +258,7 @@ export function LandingPage() {
                   Transportation
                 </span>
                 <br />
-                <span style={{ color: "#171717" }}>Made Simple</span>
+                <span style={{ color: C.navy }}>Made Simple</span>
               </h1>
               <p className="text-lg leading-relaxed mb-8" style={{ color: "#4b5563" }}>
                 Book trips, track vehicles in real time, manage transportation operations, and streamline travel experiences from one platform.
@@ -352,7 +352,7 @@ export function LandingPage() {
 
       {/* ── Features ─────────────────────────────────────────────────────── */}
       <section className="py-20">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="text-center mb-16">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4"
               style={{ backgroundColor: `${C.red}12`, color: C.red }}>Features</span>
@@ -386,7 +386,7 @@ export function LandingPage() {
 
       {/* ── How It Works ─────────────────────────────────────────────────── */}
       <section className="py-20" style={{ backgroundColor: `${C.navy}06` }}>
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: C.navy }}>How It Works</h2>
             <p className="text-lg" style={{ color: "#6b7280" }}>Get started in just 3 simple steps</p>
@@ -414,7 +414,7 @@ export function LandingPage() {
 
       {/* ── Benefits ─────────────────────────────────────────────────────── */}
       <section className="py-20">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="text-center mb-16">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4"
               style={{ backgroundColor: `${C.green}18`, color: C.g2 }}>Why Choose Us</span>
@@ -445,18 +445,20 @@ export function LandingPage() {
 
       {/* ── Stats ────────────────────────────────────────────────────────── */}
       <section className="py-20" style={{ backgroundColor: C.bg }}>
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="text-center mb-14">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3"
               style={{ backgroundColor: `${C.red}12`, color: C.red }}>Impact</span>
             <h2 className="text-3xl font-black mt-2" style={{ color: C.navy }}>Numbers that speak for themselves</h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
             {[
-              { value: "1,200", suffix: "+", label: "Users Registered",    icon: Users,      color: C.red    },
-              { value: "3,800", suffix: "+", label: "Bookings Made",       icon: ShieldCheck, color: C.green  },
-              { value: "250",   suffix: "+", label: "Trips Scheduled",     icon: Bus,         color: C.gold   },
-              { value: "3",     suffix: "s", label: "Avg. Booking Time",   icon: Zap,         color: C.purple },
+              { value: "1,200", suffix: "+", label: "Users Registered",  icon: Users,       color: C.red    },
+              { value: "3,800", suffix: "+", label: "Bookings Made",     icon: ShieldCheck, color: C.green  },
+              { value: "250",   suffix: "+", label: "Trips Scheduled",   icon: Bus,         color: C.gold   },
+              { value: "3",     suffix: "s", label: "Avg. Booking Time", icon: Zap,         color: C.purple },
+              { value: "100",   suffix: "%", label: "OTP Secured",       icon: ShieldCheck, color: "#FD1843" },
+              { value: "6",     suffix: "+", label: "User Roles",        icon: Users,       color: "#2D3E2C" },
             ].map((s, i) => (
               <motion.div key={s.label}
                 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -480,7 +482,7 @@ export function LandingPage() {
 
       {/* ── Testimonials ─────────────────────────────────────────────────── */}
       <section className="py-20">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="text-center mb-16">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4"
               style={{ backgroundColor: `${C.gold}20`, color: "#a07800" }}>Testimonials</span>
@@ -516,7 +518,7 @@ export function LandingPage() {
 
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       <section className="py-20" style={{ backgroundColor: `${C.navy}06` }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           <div className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-black mb-4" style={{ color: C.navy }}>Frequently Asked Questions</h2>
             <p className="text-lg" style={{ color: "#6b7280" }}>Got questions? We've got answers</p>

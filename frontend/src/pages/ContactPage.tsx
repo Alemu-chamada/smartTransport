@@ -31,7 +31,7 @@ export function ContactPage() {
           <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full blur-3xl opacity-10"
             style={{ backgroundColor: C.green }} />
         </div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="w-full max-w-4xl mx-auto px-6 sm:px-10 text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5"
               style={{ backgroundColor: `${C.red}12`, color: C.red }}>Get In Touch</span>
@@ -49,43 +49,42 @@ export function ContactPage() {
         </div>
       </section>
 
-      {/* ── Contact Cards: diagonal with vertical metro connector ─────── */}
-      <section className="py-8 pb-24 overflow-hidden">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ── Contact Cards ────────────────────────────────────────────────── */}
+      <section className="py-12 pb-28">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
 
-          {/* ── DESKTOP / TABLET: diagonal grid ─────────────────────────── */}
-          {/* 3-column grid: [card] [connector] [spacer+card-bottom] */}
-          <div className="hidden md:grid gap-0" style={{ gridTemplateColumns: "1fr 80px 1fr", minHeight: 560 }}>
+          {/* ── DESKTOP: vertical composition, slight offset ──────────── */}
+          <div className="hidden md:block relative" style={{ minHeight: 780 }}>
 
-            {/* Column 1: System card top, empty bottom */}
-            <div className="flex flex-col">
-              <motion.div initial={{ opacity: 0, x: -32 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.65 }}>
-                <SystemCard />
-              </motion.div>
+            {/* System card — top, left-of-center */}
+            <motion.div className="absolute top-0"
+              style={{ left: "50%", marginLeft: "-340px", width: "360px" }}
+              initial={{ opacity: 0, y: -24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.65 }}>
+              <SystemCard />
+            </motion.div>
+
+            {/* SVG connector — full overlay */}
+            <div className="absolute inset-0 pointer-events-none">
+              <ConnectorSVG />
             </div>
 
-            {/* Column 2: vertical SVG connector */}
-            <div className="flex justify-center">
-              <VerticalConnector />
-            </div>
-
-            {/* Column 3: empty top, Developer card bottom */}
-            <div className="flex flex-col justify-end">
-              <motion.div initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.15 }}>
-                <DeveloperCard />
-              </motion.div>
-            </div>
+            {/* Developer card — bottom, right-of-center */}
+            <motion.div className="absolute bottom-0"
+              style={{ left: "50%", marginLeft: "-20px", width: "360px" }}
+              initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.2 }}>
+              <DeveloperCard />
+            </motion.div>
           </div>
 
-          {/* ── MOBILE: stacked vertically ──────────────────────────────── */}
+          {/* ── MOBILE: stacked ──────────────────────────────────────── */}
           <div className="md:hidden flex flex-col gap-6">
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.5 }}>
               <SystemCard />
             </motion.div>
-            <div className="flex items-center gap-3 px-2">
+            <div className="flex items-center gap-3">
               <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, transparent, ${C.red}40)` }} />
               <Bus className="h-4 w-4 flex-shrink-0" style={{ color: C.red }} />
               <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${C.red}40, transparent)` }} />
@@ -95,13 +94,12 @@ export function ContactPage() {
               <DeveloperCard />
             </motion.div>
           </div>
-
         </div>
       </section>
 
       {/* CTA */}
       <section className="py-16" style={{ backgroundColor: `${C.navy}06` }}>
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-2xl mx-auto px-6 sm:px-10">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="bg-white rounded-3xl p-10 text-center"
             style={{ border: "1px solid rgba(0,22,33,0.07)", boxShadow: "0 8px 40px rgba(0,22,33,0.08)" }}>
@@ -238,109 +236,114 @@ function DeveloperCard() {
   );
 }
 
-/* ─── Vertical Metro Connector ──────────────────────────────────────────── */
-// Path: starts at top-center (touching System card bottom), travels straight down,
-// makes one clean 45° horizontal shift near the bottom, ends at bottom-center (touching Dev card top).
-// The shift offset is 20px to the right, reflecting the diagonal card placement.
-const VPATH = "M 40 0 L 40 340 L 60 380 L 60 560";
+/* ─── ConnectorSVG ───────────────────────────────────────────────────────── */
+/*
+ * viewBox: 1000 × 780
+ *
+ * Card positions (container ~full width, cards fixed at px offsets from 50%):
+ *   System card : left = 50% - 340px, width = 360px
+ *                 → right edge ≈ x = 520  (500 - 340 + 360)
+ *                 → mid-height of card ≈ y = 140
+ *
+ *   Dev card    : left = 50% - 20px,  width = 360px
+ *                 → left edge ≈ x = 480  (500 - 20)
+ *                 → mid-height from bottom ≈ y = 638
+ *
+ * Route: start at System card right edge → arc right → drop straight down → arc left → end at Dev card left edge
+ * Path: M 520 140 H 620 C 660 140 660 175 660 220 V 560 C 660 605 640 638 600 638 H 480
+ */
+const CPATH = "M 520 140 H 620 C 660 140 660 175 660 220 V 560 C 660 605 640 638 600 638 H 480";
 
-const VNODES = [
-  { y: 120, Icon: MapPin,     label: "Station" },
-  { y: 240, Icon: Bus,        label: "En Route" },
-  { y: 360, Icon: Navigation, label: "Arrive"   },
+const CNODES = [
+  { x: 660, y: 280, Icon: MapPin,     label: "Station"  },
+  { x: 660, y: 390, Icon: Bus,        label: "En Route" },
+  { x: 660, y: 500, Icon: Navigation, label: "Arrive"   },
 ];
 
-function VerticalConnector() {
-  const W = 80;
-  const H = 560;
+function ConnectorSVG() {
   return (
-    <div style={{ width: W, height: H, position: "relative" }}>
-      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none">
-        <defs>
-          <linearGradient id="vcg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor={C.red}    stopOpacity="0.9" />
-            <stop offset="55%"  stopColor={C.gold}   stopOpacity="0.85" />
-            <stop offset="100%" stopColor={C.purple} stopOpacity="0.9" />
-          </linearGradient>
-          <linearGradient id="vflow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#fff"     stopOpacity="0"   />
-            <stop offset="40%"  stopColor={C.red}    stopOpacity="0.95"/>
-            <stop offset="55%"  stopColor="#fff"     stopOpacity="1"   />
-            <stop offset="100%" stopColor={C.purple} stopOpacity="0"   />
-          </linearGradient>
-          <filter id="vglow">
-            <feGaussianBlur stdDeviation="3" result="b" />
-            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="vsg">
-            <feGaussianBlur stdDeviation="5" result="b" />
-            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-        </defs>
+    <svg
+      width="100%" height="100%"
+      viewBox="0 0 1000 780"
+      preserveAspectRatio="xMidYMid meet"
+      fill="none"
+      style={{ position: "absolute", inset: 0 }}
+    >
+      <defs>
+        <linearGradient id="cg2" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0%"   stopColor={C.red}    stopOpacity="0.95" />
+          <stop offset="50%"  stopColor={C.gold}   stopOpacity="0.9"  />
+          <stop offset="100%" stopColor={C.purple} stopOpacity="0.95" />
+        </linearGradient>
+        <linearGradient id="cf2" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0%"   stopColor="#fff"     stopOpacity="0"   />
+          <stop offset="40%"  stopColor={C.red}    stopOpacity="1"   />
+          <stop offset="55%"  stopColor="#fff"     stopOpacity="1"   />
+          <stop offset="100%" stopColor={C.purple} stopOpacity="0"   />
+        </linearGradient>
+        <filter id="glow2" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="5" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <filter id="sglow2" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="9" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
 
-        {/* Glow track */}
-        <path d={VPATH} stroke="url(#vcg)" strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" opacity={0.12} />
+      {/* Wide glow halo */}
+      <path d={CPATH} stroke="url(#cg2)" strokeWidth={20} fill="none"
+        strokeLinecap="round" strokeLinejoin="round" opacity={0.1} />
 
-        {/* Dashed line */}
-        <path d={VPATH} stroke="url(#vcg)" strokeWidth={1.5} strokeLinecap="round"
-          strokeLinejoin="round" strokeDasharray="7 6" opacity={0.6} filter="url(#vglow)" />
+      {/* Dashed track */}
+      <path d={CPATH} stroke="url(#cg2)" strokeWidth={2}
+        strokeLinecap="round" strokeLinejoin="round"
+        strokeDasharray="12 8" opacity={0.55} filter="url(#glow2)" fill="none" />
 
-        {/* Solid line */}
-        <path d={VPATH} stroke="url(#vcg)" strokeWidth={2.5} strokeLinecap="round"
-          strokeLinejoin="round" opacity={0.9} filter="url(#vglow)" />
+      {/* Solid bright line */}
+      <path d={CPATH} stroke="url(#cg2)" strokeWidth={3}
+        strokeLinecap="round" strokeLinejoin="round"
+        opacity={0.9} filter="url(#glow2)" fill="none" />
 
-        {/* Animated particle flowing downward */}
-        <motion.path d={VPATH} stroke="url(#vflow)" strokeWidth={5} strokeLinecap="round" fill="none"
-          initial={{ pathOffset: 0 }}
-          animate={{ pathOffset: [0, 1] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-          filter="url(#vsg)" opacity={0.9} />
+      {/* Animated particle */}
+      <motion.path
+        d={CPATH} stroke="url(#cf2)" strokeWidth={7}
+        strokeLinecap="round" fill="none"
+        initial={{ pathOffset: 0 }}
+        animate={{ pathOffset: [0, 1] }}
+        transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
+        filter="url(#sglow2)" opacity={0.95}
+      />
 
-        {/* Station nodes */}
-        {VNODES.map(({ y }, i) => (
-          <g key={i}>
-            <motion.circle cx={40} cy={y} r={12} fill="none" stroke={C.red} strokeWidth={1}
-              animate={{ r: [8, 20], opacity: [0.6, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.6 }} />
-            <circle cx={40} cy={y} r={8} fill="#FFF9FA" stroke="url(#vcg)" strokeWidth={1.5} filter="url(#vglow)" />
-            <circle cx={40} cy={y} r={3.5} fill="url(#vcg)" opacity={0.9} />
-          </g>
-        ))}
-
-        {/* Origin dot — top, touching System card */}
-        <circle cx={40} cy={0} r={6} fill={C.red} filter="url(#vglow)" />
-        <motion.circle cx={40} cy={0} r={6} fill="none" stroke={C.red} strokeWidth={1.5}
-          animate={{ r: [6, 16], opacity: [0.85, 0] }}
-          transition={{ duration: 1.4, repeat: Infinity }} />
-        <text x={40} y={-8} textAnchor="middle" fontSize="8" fontWeight="700"
-          fill={C.red} letterSpacing="1" opacity="0.7">FROM</text>
-
-        {/* Destination dot — bottom with arrowhead, touching Dev card */}
-        <polygon points={`${60 - 7},${H - 14} ${60},${H} ${60 + 7},${H - 14}`}
-          fill={C.purple} opacity={0.9} />
-        <circle cx={60} cy={H} r={6} fill={C.purple} filter="url(#vglow)" />
-        <motion.circle cx={60} cy={H} r={6} fill="none" stroke={C.purple} strokeWidth={1.5}
-          animate={{ r: [6, 16], opacity: [0.85, 0] }}
-          transition={{ duration: 1.4, repeat: Infinity, delay: 0.7 }} />
-        <text x={60} y={H + 14} textAnchor="middle" fontSize="8" fontWeight="700"
-          fill={C.purple} letterSpacing="1" opacity="0.7">TO</text>
-      </svg>
-
-      {/* Station labels */}
-      {VNODES.map(({ y, Icon, label }) => (
-        <div key={label} style={{ position: "absolute", top: y - 12, left: 55,
-          display: "flex", alignItems: "center", gap: 4 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 6, display: "flex",
-            alignItems: "center", justifyContent: "center",
-            backgroundColor: `${C.red}14`, border: `1px solid ${C.red}28` }}>
-            <Icon style={{ width: 10, height: 10, color: C.red }} />
-          </div>
-          <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(0,22,33,0.3)",
-            letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
-            {label}
-          </span>
-        </div>
+      {/* Station nodes */}
+      {CNODES.map(({ x, y }, i) => (
+        <g key={i}>
+          <motion.circle cx={x} cy={y} r={18} fill="none"
+            stroke={C.red} strokeWidth={1.5}
+            animate={{ r: [11, 26], opacity: [0.65, 0] }}
+            transition={{ duration: 1.9, repeat: Infinity, delay: i * 0.65 }} />
+          <circle cx={x} cy={y} r={11} fill="#FFF9FA"
+            stroke="url(#cg2)" strokeWidth={2} filter="url(#glow2)" />
+          <circle cx={x} cy={y} r={4.5} fill="url(#cg2)" opacity={0.95} />
+        </g>
       ))}
-    </div>
+
+      {/* Origin dot — right edge of System card */}
+      <circle cx={520} cy={140} r={8} fill={C.red} filter="url(#glow2)" />
+      <motion.circle cx={520} cy={140} r={8} fill="none"
+        stroke={C.red} strokeWidth={2}
+        animate={{ r: [8, 22], opacity: [0.85, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }} />
+
+      {/* Destination dot + arrowhead — left edge of Developer card */}
+      <polygon points="465,625 480,638 465,651" fill={C.purple} opacity={0.9} />
+      <circle cx={480} cy={638} r={8} fill={C.purple} filter="url(#glow2)" />
+      <motion.circle cx={480} cy={638} r={8} fill="none"
+        stroke={C.purple} strokeWidth={2}
+        animate={{ r: [8, 22], opacity: [0.85, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, delay: 0.75 }} />
+    </svg>
   );
 }
+
+function VerticalConnector() { return null; }
