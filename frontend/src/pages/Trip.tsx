@@ -1,414 +1,251 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { MainLayout } from "../routes/MainLayout";
 import { Card } from "../shared/ui/Card";
 import { Button } from "../shared/ui/Button";
 import { Input } from "../shared/ui/Input";
-import { MapPin, Clock, Users, DollarSign, Search, Navigation, Phone, User, Plus } from "lucide-react";
+import { MapPin, Clock, Users, Search, Navigation, Plus, Calendar, Loader2, ArrowLeftRight } from "lucide-react";
 import { useAuth } from "../providers/AuthProvider";
+import { tripApi, type Trip as TripType } from "../features/trip/services";
 
 export function Trip() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchFrom, setSearchFrom] = useState("");
   const [searchTo, setSearchTo] = useState("");
-  const [activeSection, setActiveSection] = useState("track"); // "find" or "track"
+  const [activeSection, setActiveSection] = useState("find");
+  const [trips, setTrips] = useState<TripType[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const trips = [
-    {
-      id: 1,
-      from: "New York",
-      to: "Boston",
-      departure: "08:00 AM",
-      arrival: "12:00 PM",
-      price: 45,
-      availableSeats: 12,
-      duration: "4h",
-    },
-    {
-      id: 2,
-      from: "New York",
-      to: "Boston",
-      departure: "02:00 PM",
-      arrival: "06:00 PM",
-      price: 50,
-      availableSeats: 8,
-      duration: "4h",
-    },
-    {
-      id: 3,
-      from: "New York",
-      to: "Boston",
-      departure: "06:00 PM",
-      arrival: "10:00 PM",
-      price: 40,
-      availableSeats: 15,
-      duration: "4h",
-    },
-  ];
+  // Load all scheduled (admin-created) trips on mount
+  useEffect(() => {
+    loadTrips();
+  }, []);
 
-  const tripInfo = {
-    route: "New York → Boston",
-    currentLocation: "New Haven, CT",
-    progress: 45,
-    eta: "11:30 AM",
-    driver: {
-      name: "Michael Johnson",
-      phone: "+1 (555) 123-4567",
-      rating: 4.8,
-    },
-    stops: [
-      { name: "New York", time: "08:00 AM", status: "completed" },
-      { name: "Stamford", time: "09:15 AM", status: "completed" },
-      { name: "New Haven", time: "10:00 AM", status: "current" },
-      { name: "Hartford", time: "10:45 AM", status: "upcoming" },
-      { name: "Boston", time: "12:00 PM", status: "upcoming" },
-    ],
+  const loadTrips = async () => {
+    try {
+      setLoading(true);
+      const data = await tripApi.getScheduledTrips();
+      setTrips(data?.trips ?? []);
+    } catch (error) {
+      console.error("Failed to load trips:", error);
+      setTrips([]);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      const data = await tripApi.getNearbyTrips({ origin: searchFrom, destination: searchTo });
+      setTrips(data?.trips ?? []);
+    } catch (error) {
+      console.error("Failed to search trips:", error);
+      setTrips([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSwap = () => {
+    setSearchFrom(searchTo);
+    setSearchTo(searchFrom);
+  };
+
+  const formatTime = (d: string) =>
+    new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
 
   return (
     <MainLayout>
       <div className="space-y-8">
-        {/* Buttons Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex gap-4">
-              <Button
-                variant={activeSection === "track" ? "primary" : "secondary"}
-                onClick={() => setActiveSection("track")}
-              >
+        {/* Tab row */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex gap-3">
+              <Button variant={activeSection === "track" ? "primary" : "secondary"}
+                onClick={() => setActiveSection("track")}>
                 Track Trip
               </Button>
-              <Button
-                variant={activeSection === "find" ? "primary" : "secondary"}
-                onClick={() => setActiveSection("find")}
-              >
+              <Button variant={activeSection === "find" ? "primary" : "secondary"}
+                onClick={() => setActiveSection("find")}>
                 Find Trip
               </Button>
             </div>
             {user?.role === "system_admin" && (
               <Button onClick={() => navigate("/admin/trips")}>
-                <Plus className="h-5 w-5 mr-2" />
+                <Plus className="h-5 w-5" />
                 Create Trip
               </Button>
             )}
           </div>
         </motion.div>
 
-        {/* Active Content */}
+        {/* ── Track Trip ──────────────────────────────────────────────────── */}
         {activeSection === "track" && (
           <div className="space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-4xl font-bold text-foreground mb-2">
-                Track your trip
-              </h1>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <h1 className="text-4xl font-bold text-foreground mb-2">Track your trip</h1>
+              <p className="text-muted-foreground">Real-time vehicle tracking via Socket.IO</p>
             </motion.div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  <Card className="p-0 overflow-hidden">
-                    <div className="h-[500px] bg-gradient-to-br from-muted via-muted/50 to-background flex items-center justify-center relative">
-                      <div className="absolute inset-0 opacity-10">
-                        <svg className="w-full h-full" viewBox="0 0 100 100">
-                          <path
-                            d="M 10 50 Q 30 20, 50 50 T 90 50"
-                            stroke="currentColor"
-                            strokeWidth="0.5"
-                            fill="none"
-                            strokeDasharray="2,2"
-                          />
-                        </svg>
-                      </div>
-
-                      <div className="text-center z-10">
-                        <div className="h-16 w-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                          <Navigation className="h-8 w-8 text-primary-foreground" />
-                        </div>
-                        <h3 className="text-xl font-bold text-foreground mb-2">
-                          Live Tracking
-                        </h3>
-                        <p className="text-muted-foreground">
-                          Map view placeholder
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-4">
-                          Current Location: <span className="font-medium text-foreground">{tripInfo.currentLocation}</span>
-                        </p>
-                      </div>
-
-                      <motion.div
-                        className="absolute"
-                        style={{ left: "45%", top: "50%" }}
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <div className="h-8 w-8 bg-primary rounded-full border-4 border-primary-foreground shadow-lg" />
-                      </motion.div>
-                    </div>
-
-                    <div className="p-6 bg-muted/30">
-                      <div className="flex items-center gap-4">
-                        <div className="flex-1">
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="text-muted-foreground">Progress</span>
-                            <span className="font-medium text-foreground">
-                              {tripInfo.progress}%
-                            </span>
-                          </div>
-                          <div className="h-2 bg-muted rounded-full overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${tripInfo.progress}%` }}
-                              transition={{ duration: 1, delay: 0.5 }}
-                              className="h-full bg-primary rounded-full"
-                            />
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">ETA</p>
-                          <p className="font-bold text-foreground">
-                            {tripInfo.eta}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
+            <Card className="p-12 text-center">
+              <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <Navigation className="h-10 w-10 text-muted-foreground" />
               </div>
-
-              <div className="space-y-6">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <Card className="p-6">
-                    <h3 className="font-bold text-foreground mb-4">Trip Details</h3>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <MapPin className="h-5 w-5 text-primary" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Route</p>
-                          <p className="font-medium text-foreground">
-                            {tripInfo.route}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-primary" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">
-                            Estimated Arrival
-                          </p>
-                          <p className="font-medium text-foreground">
-                            {tripInfo.eta}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <Card className="p-6">
-                    <h3 className="font-bold text-foreground mb-4">Driver Info</h3>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
-                          <User className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {tripInfo.driver.name}
-                          </p>
-                          <div className="flex items-center gap-1">
-                            <span className="text-yellow-500">★</span>
-                            <span className="text-sm text-muted-foreground">
-                              {tripInfo.driver.rating}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 pt-3 border-t border-border">
-                        <Phone className="h-5 w-5 text-muted-foreground" />
-                        <p className="text-sm text-foreground">
-                          {tripInfo.driver.phone}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  <Card className="p-6">
-                    <h3 className="font-bold text-foreground mb-4">Stops</h3>
-
-                    <div className="space-y-3">
-                      {tripInfo.stops.map((stop, index) => (
-                        <div key={index} className="flex items-center gap-3">
-                          <div
-                            className={`
-                              h-3 w-3 rounded-full
-                              ${
-                                stop.status === "completed"
-                                  ? "bg-green-500"
-                                  : stop.status === "current"
-                                  ? "bg-primary ring-4 ring-primary/20"
-                                  : "bg-muted"
-                              }
-                            `}
-                          />
-                          <div className="flex-1">
-                            <p
-                              className={`
-                                text-sm
-                                ${
-                                  stop.status === "current"
-                                    ? "font-medium text-foreground"
-                                    : "text-muted-foreground"
-                                }
-                              `}
-                            >
-                              {stop.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {stop.time}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </motion.div>
-              </div>
-            </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">Live Tracking</h3>
+              <p className="text-muted-foreground text-sm max-w-sm mx-auto mb-6">
+                Select an active booking to track your trip in real time on the map.
+              </p>
+              <Button variant="secondary" onClick={() => navigate("/tracking")}>
+                <Navigation className="h-4 w-4" />
+                Open Tracking
+              </Button>
+            </Card>
           </div>
         )}
 
+        {/* ── Find Trip ───────────────────────────────────────────────────── */}
         {activeSection === "find" && (
           <div className="space-y-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-4xl font-bold text-foreground mb-2">
-                Find your trip
-              </h1>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <h1 className="text-4xl font-bold text-foreground mb-2">Find your trip</h1>
+              <p className="text-muted-foreground">Search and book your next journey</p>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+
+            {/* Search bar */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
               <Card className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      placeholder="From"
-                      value={searchFrom}
-                      onChange={(e) => setSearchFrom(e.target.value)}
-                      className="pl-11"
-                    />
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Search Route</p>
+                <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3">
+                  <div className="flex-1">
+                    <label className="block text-xs text-muted-foreground mb-1.5 font-medium">From</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="Origin city or station" value={searchFrom}
+                        onChange={e => setSearchFrom(e.target.value)} className="pl-10" />
+                    </div>
                   </div>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      placeholder="To"
-                      value={searchTo}
-                      onChange={(e) => setSearchTo(e.target.value)}
-                      className="pl-11"
-                    />
+                  <button onClick={handleSwap}
+                    className="self-center md:self-end mb-0 md:mb-2 flex items-center justify-center h-9 w-9 rounded-xl bg-muted hover:bg-muted/80 transition-colors flex-shrink-0"
+                    title="Swap origin and destination">
+                    <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                  <div className="flex-1">
+                    <label className="block text-xs text-muted-foreground mb-1.5 font-medium">To</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="Destination city or station" value={searchTo}
+                        onChange={e => setSearchTo(e.target.value)} className="pl-10" />
+                    </div>
                   </div>
                 </div>
-                <Button className="w-full mt-4">
-                  <Search className="h-5 w-5" />
+                <Button className="w-full mt-4" onClick={handleSearch} disabled={loading}>
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                   Search Trips
                 </Button>
               </Card>
             </motion.div>
 
+            {/* Results */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">Available Trips</h2>
-              {trips.map((trip, index) => (
-                <motion.div
-                  key={trip.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                >
-                  <Card className="p-6" hover>
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-center gap-3">
-                          <MapPin className="h-5 w-5 text-primary" />
-                          <div>
-                            <p className="font-bold text-foreground">
-                              {trip.from} → {trip.to}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {trip.duration} journey
-                            </p>
-                          </div>
-                        </div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-foreground">Available Trips</h2>
+                {!loading && trips.length > 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    {trips.length} trip{trips.length !== 1 ? "s" : ""} found
+                  </span>
+                )}
+              </div>
 
-                        <div className="flex flex-wrap gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-foreground">
-                              {trip.departure} - {trip.arrival}
-                            </span>
+              {loading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : trips.length === 0 ? (
+                <Card className="p-12 text-center">
+                  <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MapPin className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">No trips available</h3>
+                  <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                    {searchFrom || searchTo
+                      ? "No trips found for this route. Try different origin or destination."
+                      : "No scheduled trips are available at the moment. Please check back later."}
+                  </p>
+                </Card>
+              ) : (
+                trips.map((trip, index) => (
+                  <motion.div key={trip.id}
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.15 + index * 0.07 }}
+                    onClick={() => navigate(`/trip/${trip.id}`)} className="cursor-pointer">
+                    <Card className="overflow-hidden" hover>
+                      <div className="h-[3px]" style={{ background: "linear-gradient(90deg, #FF4103, #FFBE0B, #21F1A8)" }} />
+                      <div className="p-6">
+                        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                          <div className="flex-1 space-y-4">
+                            {/* Route */}
+                            <div className="flex items-start gap-3">
+                              <div className="flex flex-col items-center gap-1 pt-1 flex-shrink-0">
+                                <div className="h-3 w-3 rounded-full bg-[#FF4103] ring-2 ring-[#FF4103]/30" />
+                                <div className="w-px h-6 border-l-2 border-dashed border-muted-foreground/40" />
+                                <div className="h-3 w-3 rounded-full bg-[#21F1A8] ring-2 ring-[#21F1A8]/30" />
+                              </div>
+                              <div className="space-y-2">
+                                <p className="font-bold text-foreground text-base leading-tight">{trip.origin}</p>
+                                <p className="font-bold text-foreground text-base leading-tight">{trip.destination}</p>
+                              </div>
+                              <div className="ml-auto flex-shrink-0">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                  Scheduled
+                                </span>
+                              </div>
+                            </div>
+                            {trip.route_description && (
+                              <p className="text-sm text-muted-foreground">{trip.route_description}</p>
+                            )}
+                            {/* Meta chips */}
+                            <div className="flex flex-wrap gap-2">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span className="font-medium text-foreground">{formatDate(trip.scheduled_start_time)}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span className="font-medium text-foreground">{formatTime(trip.scheduled_start_time)}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-lg text-sm">
+                                <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span className="font-medium text-foreground">{trip.total_capacity} seats</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-foreground">
-                              {trip.availableSeats} seats left
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-5 text-muted-foreground" />
-                            <span className="text-foreground font-medium">
-                              ${trip.price}
-                            </span>
+                          {/* Fare + CTA */}
+                          <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-4 lg:gap-3 lg:min-w-[140px]">
+                            {trip.fare != null && (
+                              <div className="text-right">
+                                <p className="text-xs text-muted-foreground mb-0.5">Fare per seat</p>
+                                <p className="text-2xl font-bold text-foreground leading-tight">
+                                  {trip.currency || "ETB"} {trip.fare.toLocaleString()}
+                                </p>
+                              </div>
+                            )}
+                            <Button onClick={e => { e.stopPropagation(); navigate(`/trip/${trip.id}`); }}
+                              variant="primary" size="md">
+                              Book Now
+                            </Button>
                           </div>
                         </div>
                       </div>
-
-                      <Button
-                        onClick={() => navigate(`/trip/${trip.id}`)}
-                        variant="primary"
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
+                    </Card>
+                  </motion.div>
+                ))
+              )}
             </div>
           </div>
         )}
