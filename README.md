@@ -36,7 +36,7 @@
 
 **SmartTransport** is a production-ready, full-stack web application that brings the entire transportation lifecycle into one unified platform. Whether you're a passenger booking a seat, a driver sharing your live location, or a system administrator managing an entire fleet — SmartTransport has a precisely tailored experience for you.
 
-Built as a final-year Computer Science & Engineering project at **Addis Ababa Science and Technology University (ASTU)**, it demonstrates enterprise-grade engineering across the full stack: secure authentication, role-based access control, real-time communication, cloud deployment, and professional UI design.
+it demonstrates enterprise-grade engineering across the full stack: secure authentication, role-based access control, real-time communication, cloud deployment, and professional UI design.
 
 > **Live at:** [smart-transport.cyan.vercel.app](https://smart-transport.cyan.vercel.app)
 
