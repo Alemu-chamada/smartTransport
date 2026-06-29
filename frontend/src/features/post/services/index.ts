@@ -87,13 +87,31 @@ export const postApi = {
 
   toggleLike: async (postId: string): Promise<{ post: Post }> => {
     const response = await apiService.post<{
-      success: boolean;
-      message: string;
-      data: { post: Post };
+      success: boolean; message: string; data: { post: Post };
     }>(`/posts/${postId}/like`, {});
-    if (!response?.data?.data) {
-      throw new Error('Invalid response from server');
-    }
+    if (!response?.data?.data) throw new Error('Invalid response from server');
+    return response.data.data;
+  },
+
+  deletePost: async (postId: string) => {
+    const response = await apiService.delete<{ success: boolean; message: string; data: any }>(`/posts/${postId}`);
+    return response.data;
+  },
+
+  editPost: async (postId: string, data: { title?: string; content?: string }) => {
+    const response = await apiService.patch<{ success: boolean; message: string; data: { post: Post } }>(`/posts/${postId}`, data);
+    if (!response?.data?.data) throw new Error('Invalid response from server');
+    return response.data.data;
+  },
+
+  deleteComment: async (postId: string, commentId: string) => {
+    const response = await apiService.delete<{ success: boolean; message: string; data: any }>(`/posts/${postId}/comments/${commentId}`);
+    return response.data;
+  },
+
+  editComment: async (postId: string, commentId: string, data: { content: string }) => {
+    const response = await apiService.patch<{ success: boolean; message: string; data: { comment: Comment } }>(`/posts/${postId}/comments/${commentId}`, data);
+    if (!response?.data?.data) throw new Error('Invalid response from server');
     return response.data.data;
   },
 };

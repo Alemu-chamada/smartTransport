@@ -50,10 +50,22 @@ const getTripOccupiedSeats = asyncHandler(async (req, res) => {
   });
 });
 
+const deleteTrip = asyncHandler(async (req, res) => {
+  await tripService.deleteTrip({ actor: req.user, tripId: req.params.id });
+  return success(res, { message: "Trip deleted successfully", data: { deleted: true } });
+});
+
+const updateTrip = asyncHandler(async (req, res) => {
+  const result = await tripService.updateTrip({ actor: req.user, tripId: req.params.id, payload: req.body });
+  return success(res, { message: "Trip updated successfully", data: result });
+});
+
 module.exports = {
   createTrip,
   getScheduledTrips,
   getNearbyTrips,
   getTripById,
-  getTripOccupiedSeats
+  getTripOccupiedSeats,
+  deleteTrip,
+  updateTrip,
 };

@@ -5,7 +5,7 @@ import { Card } from "../shared/ui/Card";
 import { Button } from "../shared/ui/Button";
 import { Input } from "../shared/ui/Input";
 import { Modal } from "../shared/ui/Modal";
-import { Heart, MessageCircle, Share2, Send, User, Loader2, Plus, X } from "lucide-react";
+import { Heart, MessageCircle, Share2, Send, User, Loader2, Plus, Trash2, Pencil } from "lucide-react";
 import { postApi, type Post, type Comment } from "../features/post/services";
 import { useAuth } from "../providers/AuthProvider";
 
@@ -23,6 +23,13 @@ export function PostsAndComments() {
   const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   const isAdmin = user?.role === "system_admin" || user?.role === "traffic_authority";
+
+  // ── edit/delete state ──────────────────────────────────────────────
+  const [editPostId, setEditPostId] = useState<string | null>(null);
+  const [editPostTitle, setEditPostTitle] = useState("");
+  const [editPostContent, setEditPostContent] = useState("");
+  const [editCommentId, setEditCommentId] = useState<{ postId: string; commentId: string } | null>(null);
+  const [editCommentText, setEditCommentText] = useState("");
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -114,15 +121,52 @@ export function PostsAndComments() {
     try {
       const data = await postApi.toggleLike(postId);
       if (data?.post) {
-        setPosts((prev) => 
-          prev.map((post) => 
-            post.id === postId ? data.post : post
-          )
-        );
+        setPosts((prev) => prev.map((post) => post.id === postId ? data.post : post));
       }
     } catch (error) {
       console.error("Failed to toggle like:", error);
     }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("Delete this post and all its comments?")) return;
+    try {
+      await postApi.deletePost(postId);
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+    } catch (error) { console.error("Failed to delete post:", error); }
+  };
+
+  const handleEditPost = async () => {
+    if (!editPostId) return;
+    try {
+      const data = await postApi.editPost(editPostId, { title: editPostTitle, content: editPostContent });
+      if (data?.post) setPosts((prev) => prev.map((p) => p.id === editPostId ? data.post : p));
+      setEditPostId(null);
+    } catch (error) { console.error("Failed to edit post:", error); }
+  };
+
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    if (!confirm("Delete this comment?")) return;
+    try {
+      await postApi.deleteComment(postId, commentId);
+      setComments((prev) => ({ ...prev, [postId]: prev[postId].filter((c) => c.id !== commentId) }));
+    } catch (error) { console.error("Failed to delete comment:", error); }
+  };
+
+  const handleEditComment = async () => {
+    if (!editCommentId) return;
+    try {
+      const data = await postApi.editComment(editCommentId.postId, editCommentId.commentId, { content: editCommentText });
+      if (data?.comment) {
+        setComments((prev) => ({
+          ...prev,
+          [editCommentId.postId]: prev[editCommentId.postId].map((c) =>
+            c.id === editCommentId.commentId ? data.comment : c
+          ),
+        }));
+      }
+      setEditCommentId(null);
+    } catch (error) { console.error("Failed to edit comment:", error); }
   };
 
   if (loading) {
@@ -186,19 +230,30 @@ export function PostsAndComments() {
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
               >
                 <Card className="p-6">
-                  <div className="flex gap-4 mb-4">
-                    <div className="h-12 w-12 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center flex-shrink-0">
-                      <User className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground">
-                        {post.author_name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(post.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center flex-shrink-0">
+                            <User className="h-4 w-4 text-primary-foreground" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{post.author_name}</p>
+                            <p className="text-sm text-muted-foreground">{new Date(post.created_at).toLocaleString()}</p>
+                          </div>
+                        </div>
+                        {/* Admin/author actions on post */}
+                        {(user?.role === "system_admin" || post.author_id === user?.id) && (
+                          <div className="flex gap-1">
+                            <button onClick={() => { setEditPostId(post.id); setEditPostTitle(post.title); setEditPostContent(post.content); }}
+                              className="p-1.5 rounded-lg hover:bg-muted transition-colors" title="Edit post">
+                              <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                            </button>
+                            <button onClick={() => handleDeletePost(post.id)}
+                              className="p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Delete post">
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
 
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     {post.title}
@@ -250,11 +305,28 @@ export function PostsAndComments() {
                                 <User className="h-4 w-4 text-muted-foreground" />
                               </div>
                               <div className="flex-1 bg-muted/50 rounded-xl p-3">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <p className="text-sm font-medium text-foreground">{comment.author_name}</p>
-                                  <span className="text-xs text-muted-foreground">
-                                    {new Date(comment.created_at).toLocaleString()}
-                                  </span>
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-sm font-medium text-foreground">{comment.author_name}</p>
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(comment.created_at).toLocaleString()}
+                                    </span>
+                                  </div>
+                                  {/* comment owner or admin actions */}
+                                  {(user?.role === "system_admin" || comment.author_id === user?.id) && (
+                                    <div className="flex gap-1 flex-shrink-0">
+                                      {comment.author_id === user?.id && (
+                                        <button onClick={() => { setEditCommentId({ postId: post.id, commentId: comment.id }); setEditCommentText(comment.content); }}
+                                          className="p-1 rounded hover:bg-muted transition-colors" title="Edit comment">
+                                          <Pencil className="h-3 w-3 text-muted-foreground" />
+                                        </button>
+                                      )}
+                                      <button onClick={() => handleDeleteComment(post.id, comment.id)}
+                                        className="p-1 rounded hover:bg-red-50 transition-colors" title="Delete comment">
+                                        <Trash2 className="h-3 w-3 text-destructive" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                                 <p className="text-sm text-foreground">{comment.content}</p>
                               </div>
@@ -302,45 +374,52 @@ export function PostsAndComments() {
           )}
         </div>
 
-        <Modal
-          isOpen={isCreatePostModalOpen}
-          onClose={() => setIsCreatePostModalOpen(false)}
-          title="Create New Post"
-        >
+        <Modal isOpen={isCreatePostModalOpen} onClose={() => setIsCreatePostModalOpen(false)} title="Create New Post">
           <div className="space-y-4">
-            <Input
-              label="Title"
-              placeholder="Enter post title..."
-              value={newPostTitle}
-              onChange={(e) => setNewPostTitle(e.target.value)}
-            />
+            <Input label="Title" placeholder="Enter post title..." value={newPostTitle}
+              onChange={(e) => setNewPostTitle(e.target.value)} />
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Content
-              </label>
-              <textarea
-                placeholder="Write your post here..."
-                value={newPostContent}
+              <label className="block text-sm font-medium text-foreground mb-2">Content</label>
+              <textarea placeholder="Write your post here..." value={newPostContent}
                 onChange={(e) => setNewPostContent(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[200px]"
-              />
+                className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[200px]" />
             </div>
             <div className="flex gap-3 mt-4">
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={() => setIsCreatePostModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={handleCreatePost}
-                loading={isCreatingPost}
-                disabled={!newPostTitle.trim() || !newPostContent.trim()}
-              >
-                Create Post
-              </Button>
+              <Button variant="secondary" className="flex-1" onClick={() => setIsCreatePostModalOpen(false)}>Cancel</Button>
+              <Button className="flex-1" onClick={handleCreatePost} loading={isCreatingPost}
+                disabled={!newPostTitle.trim() || !newPostContent.trim()}>Create Post</Button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* Edit Post Modal */}
+        <Modal isOpen={!!editPostId} onClose={() => setEditPostId(null)} title="Edit Post">
+          <div className="space-y-4">
+            <Input label="Title" value={editPostTitle} onChange={(e) => setEditPostTitle(e.target.value)} />
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Content</label>
+              <textarea value={editPostContent} onChange={(e) => setEditPostContent(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[160px]" />
+            </div>
+            <div className="flex gap-3">
+              <Button variant="secondary" className="flex-1" onClick={() => setEditPostId(null)}>Cancel</Button>
+              <Button className="flex-1" onClick={handleEditPost}
+                disabled={!editPostTitle.trim() || !editPostContent.trim()}>Save Changes</Button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* Edit Comment Modal */}
+        <Modal isOpen={!!editCommentId} onClose={() => setEditCommentId(null)} title="Edit Comment">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Comment</label>
+              <textarea value={editCommentText} onChange={(e) => setEditCommentText(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]" />
+            </div>
+            <div className="flex gap-3">
+              <Button variant="secondary" className="flex-1" onClick={() => setEditCommentId(null)}>Cancel</Button>
+              <Button className="flex-1" onClick={handleEditComment} disabled={!editCommentText.trim()}>Save</Button>
             </div>
           </div>
         </Modal>

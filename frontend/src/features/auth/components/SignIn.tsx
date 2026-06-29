@@ -127,6 +127,13 @@ export function SignIn() {
           </button>
         </form>
 
+        <div className="mt-3 text-right">
+          <Link to="/forgot-password" className="text-xs font-semibold hover:underline"
+            style={{ color: "#FF4103" }}>
+            Forgot password?
+          </Link>
+        </div>
+
         <div className="my-6 flex items-center gap-3">
           <div className="flex-1 h-px" style={{ backgroundColor: "#e5e7eb" }} />
           <span className="text-xs font-medium" style={{ color: "#9ca3af" }}>New here?</span>

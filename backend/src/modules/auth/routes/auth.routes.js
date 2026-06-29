@@ -7,6 +7,8 @@ router.post("/register", authRateLimiter, authController.register);
 router.post("/login", authRateLimiter, authController.login);
 router.post("/verify-otp", authRateLimiter, authController.verifyOtp);
 router.post("/resend-otp", authRateLimiter, authController.resendOtp);
+router.post("/forgot-password", authRateLimiter, authController.forgotPassword);
+router.post("/reset-password", authRateLimiter, authController.resetPassword);
 router.post("/change-email/send-otp", authMiddleware, authRateLimiter, authController.sendChangeEmailOtp);
 router.post("/change-phone/send-otp", authMiddleware, authRateLimiter, authController.sendChangePhoneOtp);
 router.post("/change-password/send-otp", authMiddleware, authRateLimiter, authController.sendChangePasswordOtp);

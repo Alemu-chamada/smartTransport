@@ -61,11 +61,28 @@ const toggleLike = asyncHandler(async (req, res) => {
   });
 });
 
+const deletePost = asyncHandler(async (req, res) => {
+  const result = await postService.deletePost({ userId: req.user.id, role: req.user.role, postId: req.params.id });
+  return success(res, { message: "Post deleted successfully", data: result });
+});
+
+const editPost = asyncHandler(async (req, res) => {
+  const post = await postService.editPost({ userId: req.user.id, role: req.user.role, postId: req.params.id, ...req.body });
+  return success(res, { message: "Post updated successfully", data: { post } });
+});
+
+const deleteComment = asyncHandler(async (req, res) => {
+  const result = await postService.deleteComment({ userId: req.user.id, role: req.user.role, commentId: req.params.commentId });
+  return success(res, { message: "Comment deleted successfully", data: result });
+});
+
+const editComment = asyncHandler(async (req, res) => {
+  const comment = await postService.editComment({ userId: req.user.id, commentId: req.params.commentId, content: req.body.content });
+  return success(res, { message: "Comment updated successfully", data: { comment } });
+});
+
 module.exports = {
-  getAllPosts,
-  getPostById,
-  getCommentsByPostId,
-  createPost,
-  createComment,
-  toggleLike
+  getAllPosts, getPostById, getCommentsByPostId,
+  createPost, createComment, toggleLike,
+  deletePost, editPost, deleteComment, editComment,
 };

@@ -15,5 +15,7 @@ router.get("/scheduled", tripController.getScheduledTrips);
 router.get("/nearby", tripController.getNearbyTrips);
 router.get("/:id", tripController.getTripById);
 router.get("/:id/occupied-seats", tripController.getTripOccupiedSeats);
+router.delete("/:id", authMiddleware, restrictTo(USER_ROLES.SYSTEM_ADMIN), tripController.deleteTrip);
+router.patch("/:id", authMiddleware, restrictTo(USER_ROLES.SYSTEM_ADMIN), tripController.updateTrip);
 
 module.exports = router;

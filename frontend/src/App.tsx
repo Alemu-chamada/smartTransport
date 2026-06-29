@@ -15,7 +15,7 @@ import { MyBookings } from "./pages/MyBookings";
 import { PostsAndComments } from "./pages/PostsAndComments";
 import { NearbyServices } from "./pages/NearbyServices";
 import { Tracking } from "./pages/Tracking";
-import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { BusManagement } from "./pages/admin/BusManagement";
 import { UserManagement } from "./pages/admin/UserManagement";
 import { TripManagement } from "./pages/admin/TripManagement";
 import { BookingManagement } from "./pages/admin/BookingManagement";
@@ -30,6 +30,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { FeaturesPage } from "./pages/FeaturesPage";
 import { AboutPage } from "./pages/AboutPage";
 import { ContactPage } from "./pages/ContactPage";
+import { ForgotPassword } from "./features/auth/components/ForgotPassword";
 import { useAuth } from "./providers/AuthProvider";
 
 export default function App() {
@@ -37,7 +38,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
@@ -54,28 +55,24 @@ export default function App() {
         <Route path="/signin" element={!isAuthenticated ? <SignIn /> : <Navigate to="/dashboard" replace />} />
         <Route path="/signup" element={!isAuthenticated ? <SignUp /> : <Navigate to="/dashboard" replace />} />
         <Route path="/otp" element={!isAuthenticated ? <OTP /> : <Navigate to="/dashboard" replace />} />
+        <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/dashboard" replace />} />
 
         {/* Protected Routes */}
         <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/trip" element={<ProtectedRoute><Trip /></ProtectedRoute>} />
-        {/* Passenger-only routes */}
         <Route path="/trips-discovery" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><TripDiscovery /></ProtectedRoute>} />
         <Route path="/trip/:id" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><TripDetails /></ProtectedRoute>} />
         <Route path="/trip/:id/seats" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><SeatSelection /></ProtectedRoute>} />
         <Route path="/trip/:id/booking" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><BookingFlow /></ProtectedRoute>} />
         <Route path="/trip/:id/payment" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><Payment /></ProtectedRoute>} />
-        <Route path="/my-bookings" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><MyBookings /></ProtectedRoute>} />
-        {/* Community — all authenticated users */}
+        <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute><PostsAndComments /></ProtectedRoute>} />
-
-        {/* Nearby services — all authenticated users */}
         <Route path="/nearby" element={<ProtectedRoute><NearbyServices /></ProtectedRoute>} />
-
-        {/* Tracking — all authenticated users */}
         <Route path="/tracking" element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><Navigate to="/dashboard" replace /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><UserManagement /></ProtectedRoute>} />
+        <Route path="/admin/buses" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><BusManagement /></ProtectedRoute>} />
         <Route path="/admin/trips" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><TripManagement /></ProtectedRoute>} />
         <Route path="/admin/trips/create" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><TripManagement /></ProtectedRoute>} />
         <Route path="/admin/bookings" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><BookingManagement /></ProtectedRoute>} />
@@ -86,37 +83,19 @@ export default function App() {
         <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><NotificationCenter /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><Settings /></ProtectedRoute>} />
         <Route path="/unauthorized" element={
-          <div className="min-h-screen flex items-center justify-center">
+          <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="text-center">
               <div className="text-6xl mb-4">🚫</div>
               <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
               <p className="text-muted-foreground mb-6">You don't have permission to view this page.</p>
-              <a href="/dashboard" className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors font-medium">Go to Dashboard</a>
+              <a href="/dashboard" className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors font-medium">
+                Go to Dashboard
+              </a>
             </div>
           </div>
         } />
-        <Route
-          path="/trips"
-          element={
-            <ProtectedRoute>
-              <Placeholder
-                title="Trips"
-                description="Trip management feature coming soon"
-              />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/bookings"
-          element={
-            <ProtectedRoute>
-              <Placeholder
-                title="Bookings"
-                description="Booking management feature coming soon"
-              />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/trips" element={<ProtectedRoute><Placeholder title="Trips" description="Trip management feature coming soon" /></ProtectedRoute>} />
+        <Route path="/bookings" element={<ProtectedRoute><Placeholder title="Bookings" description="Booking management feature coming soon" /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

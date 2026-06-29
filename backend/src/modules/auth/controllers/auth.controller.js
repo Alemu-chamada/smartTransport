@@ -164,6 +164,20 @@ const resendOtp = asyncHandler(async (req, res) => {
   });
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  const result = await authService.forgotPassword({ email: req.body.email });
+  return success(res, { message: "If that email exists, a reset code was sent.", data: result });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const result = await authService.resetPassword({
+    email: req.body.email,
+    otp: req.body.otp,
+    new_password: req.body.new_password,
+  });
+  return success(res, { message: "Password reset successfully.", data: result });
+});
+
 module.exports = {
   register,
   login,
@@ -173,5 +187,7 @@ module.exports = {
   sendChangePasswordOtp,
   logout,
   me,
-  resendOtp
+  resendOtp,
+  forgotPassword,
+  resetPassword,
 };

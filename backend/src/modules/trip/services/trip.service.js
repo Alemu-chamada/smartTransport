@@ -157,13 +157,43 @@ const getTripOccupiedSeats = async (tripId) => {
   return result.rows.map(row => row.seat_number);
 };
 
+const deleteTrip = async ({ actor, tripId }) => {
+  const trip = await getTripById(tripId);
+  if (!trip) throw new ApiError(404, "Trip not found.", "NOT_FOUND");
+  await db.query("UPDATE bookings SET status = 'failed' WHERE trip_id = $1 AND status IN ('reserved','payment_pending')", [tripId]);
+  await db.query("DELETE FROM trips WHERE id = $1", [tripId]);
+  return { deleted: true };
+};
+
+const updateTrip = async ({ actor, tripId, payload }) => {
+  const trip = await getTripById(tripId);
+  if (!trip) throw new ApiError(404, "Trip not found.", "NOT_FOUND");
+  const result = await db.query(
+    `UPDATE trips SET
+       origin = COALESCE($1, origin),
+       destination = COALESCE($2, destination),
+       fare = COALESCE($3, fare),
+       scheduled_start_time = COALESCE($4, scheduled_start_time),
+       total_capacity = COALESCE($5, total_capacity),
+       status = COALESCE($6, status),
+       updated_at = now()
+     WHERE id = $7 RETURNING *`,
+    [
+      payload.origin || null,
+      payload.destination || null,
+      payload.fare != null ? payload.fare : null,
+      payload.scheduled_start_time ? new Date(payload.scheduled_start_time) : null,
+      payload.total_capacity || null,
+      payload.status || null,
+      tripId,
+    ]
+  );
+  return { trip: mapTrip(result.rows[0]) };
+};
+
 module.exports = {
-  createTrip,
-  getScheduledTrips,
-  getNearbyTrips,
-  findScheduledTripById,
-  findActiveTripById,
-  getTripById,
-  getTripOccupiedSeats,
-  getBusById
+  createTrip, getScheduledTrips, getNearbyTrips,
+  findScheduledTripById, findActiveTripById,
+  getTripById, getTripOccupiedSeats, getBusById,
+  deleteTrip, updateTrip,
 };

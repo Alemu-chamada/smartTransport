@@ -45,8 +45,11 @@ const register = async ({ first_name, last_name, email, phone, password }) => {
   if (!first_name || !last_name) {
     throw new ApiError(422, "First name and last name are required.", "VALIDATION_ERROR");
   }
-  if (!email && !phone) {
-    throw new ApiError(422, "Either email or phone is required.", "VALIDATION_ERROR");
+  if (!email) {
+    throw new ApiError(422, "Email is required.", "VALIDATION_ERROR");
+  }
+  if (!phone) {
+    throw new ApiError(422, "Phone number is required.", "VALIDATION_ERROR");
   }
   if (!password) {
     throw new ApiError(422, "Password is required.", "VALIDATION_ERROR");
@@ -440,4 +443,50 @@ module.exports = {
   refreshAuthTokens,
   logout,
   resendOtp,
+  forgotPassword,
+  resetPassword,
 };
+
+// ── Forgot password ──────────────────────────────────────────────────────────
+async function forgotPassword({ email }) {
+  if (!email) throw new ApiError(422, "Email is required.", "VALIDATION_ERROR");
+
+  const user = await userService.findByEmailOrPhone({ email });
+  // Always return success to avoid user enumeration
+  if (!user) {
+    return { success: true };
+  }
+
+  const result = await otpService.createOtp({
+    email,
+    userId: user.id,
+    purpose: "reset_password",
+  });
+
+  return { success: true, expiresAt: result.expiresAt };
+}
+
+// ── Reset password ────────────────────────────────────────────────────────────
+async function resetPassword({ email, otp, new_password }) {
+  if (!email || !otp || !new_password) {
+    throw new ApiError(422, "Email, OTP, and new password are required.", "VALIDATION_ERROR");
+  }
+  if (new_password.length < 8) {
+    throw new ApiError(422, "Password must be at least 8 characters.", "VALIDATION_ERROR");
+  }
+
+  await otpService.verifyOtp({ email, otp, purpose: "reset_password" });
+
+  const user = await userService.findByEmailOrPhone({ email });
+  if (!user) throw new ApiError(404, "User not found.", "USER_NOT_FOUND");
+
+  await userService.updatePassword(user.id, new_password);
+
+  await auditService.log({
+    actorId: user.id,
+    action: "PASSWORD_RESET",
+    entityType: "auth",
+  });
+
+  return { success: true };
+}
