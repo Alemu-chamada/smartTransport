@@ -252,7 +252,7 @@ export function Navbar() {
     { label: 'My Bookings', path: '/my-bookings' },
     { label: 'Community', path: '/community' },
     { label: 'Nearby Services', path: '/nearby' },
-    ...(user?.role === 'system_admin' ? [{ label: 'Admin', path: '/admin/trips' }] : []),
+    ...(user?.role === 'system_admin' ? [{ label: 'Admin', path: '/admin/dashboard' }] : []),
   ];
 
   return (
@@ -264,18 +264,19 @@ export function Navbar() {
 
             <div className="hidden md:flex items-center gap-1">
               {navItems.map((item) => {
-                const isActive = location.pathname === item.path ||
-                  (item.path !== '/dashboard' && location.pathname.startsWith(item.path)) ||
-                  (item.path === '/admin/trips' && location.pathname.startsWith('/admin'));
+                const isActive =
+                  location.pathname === item.path ||
+                  (item.path === '/admin/dashboard' && location.pathname.startsWith('/admin')) ||
+                  (item.path !== '/dashboard' && item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path));
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-foreground hover:bg-muted'
-                    }`}
+                    className="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
+                    style={{
+                      color: isActive ? '#FF4103' : undefined,
+                      backgroundColor: isActive ? 'rgba(255, 65, 3, 0.07)' : undefined,
+                    }}
                   >
                     {item.label}
                   </Link>
@@ -771,16 +772,26 @@ export function Navbar() {
             className="md:hidden border-t border-border bg-background"
           >
             <div className="px-4 py-3 space-y-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 rounded-xl text-foreground hover:bg-muted transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const isActive =
+                  location.pathname === item.path ||
+                  (item.path === '/admin/dashboard' && location.pathname.startsWith('/admin')) ||
+                  (item.path !== '/dashboard' && item.path !== '/admin/dashboard' && location.pathname.startsWith(item.path));
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 rounded-xl text-sm font-semibold transition-colors"
+                    style={{
+                      color: isActive ? '#FF4103' : undefined,
+                      backgroundColor: isActive ? 'rgba(255, 65, 3, 0.07)' : undefined,
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
               <button
                 onClick={handleLogout}
                 className="w-full px-4 py-3 flex items-center gap-2 rounded-xl text-left hover:bg-muted transition-colors text-foreground"

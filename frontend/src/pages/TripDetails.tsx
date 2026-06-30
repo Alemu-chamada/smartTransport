@@ -14,12 +14,16 @@ import {
   Loader2,
 } from "lucide-react";
 import { tripApi, type Trip } from "../features/trip/services";
+import { useAuth } from "../providers/AuthProvider";
 
 export function TripDetails() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAuth();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isAdmin = user?.role === "system_admin";
 
   useEffect(() => {
     if (id) {
@@ -38,6 +42,15 @@ export function TripDetails() {
       console.error("Failed to load trip:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    // Go back in history; fall back to the appropriate trips list
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate(isAdmin ? "/trip" : "/trips-discovery");
     }
   };
 
@@ -71,7 +84,7 @@ export function TripDetails() {
       <MainLayout>
         <div className="text-center py-12">
           <h2 className="text-xl font-bold text-foreground mb-2">Trip not found</h2>
-          <Button onClick={() => navigate("/trips-discovery")}>Back to trips</Button>
+          <Button onClick={() => navigate(isAdmin ? "/trip" : "/trips-discovery")}>Back to trips</Button>
         </div>
       </MainLayout>
     );
@@ -86,7 +99,7 @@ export function TripDetails() {
           transition={{ duration: 0.5 }}
         >
           <button
-            onClick={() => navigate("/trips-discovery")}
+            onClick={handleBack}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -149,7 +162,7 @@ export function TripDetails() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Bus ID</p>
-                      <p className="font-medium text-foreground">{trip.bus_id}</p>
+                      <p className="font-medium text-foreground">{trip.bus_id || "—"}</p>
                     </div>
                   </div>
 
@@ -170,19 +183,40 @@ export function TripDetails() {
           </Card>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={() => navigate(`/trip/${id}/seats`)}
+        {/* Only passengers can proceed to seat selection */}
+        {!isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Select Seat
-          </Button>
-        </motion.div>
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => navigate(`/trip/${id}/seats`)}
+            >
+              Select Seat
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Admin sees a manage button instead */}
+        {isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Button
+              variant="secondary"
+              className="w-full"
+              size="lg"
+              onClick={() => navigate("/admin/trips")}
+            >
+              Manage This Trip in Admin Panel
+            </Button>
+          </motion.div>
+        )}
       </div>
     </MainLayout>
   );

@@ -16,11 +16,14 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { bookingApi } from "../features/booking/services";
+import { useAuth } from "../providers/AuthProvider";
 
 type BookingStatus = "reserved" | "payment_pending" | "confirmed" | "failed" | "expired";
 
 export function MyBookings() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "system_admin";
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -101,7 +104,7 @@ export function MyBookings() {
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">No bookings yet</h3>
               <p className="text-muted-foreground mb-6 text-sm">Start your journey by browsing available trips.</p>
-              <Button onClick={() => navigate("/trips-discovery")}>
+              <Button onClick={() => navigate(isAdmin ? "/trip" : "/trips-discovery")}>
                 <MapPin className="h-4 w-4" />
                 Browse Trips
               </Button>

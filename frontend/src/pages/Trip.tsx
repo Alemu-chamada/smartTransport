@@ -12,13 +12,14 @@ import { tripApi, type Trip as TripType } from "../features/trip/services";
 export function Trip() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isAdmin = user?.role === "system_admin";
   const [searchFrom, setSearchFrom] = useState("");
   const [searchTo, setSearchTo] = useState("");
   const [activeSection, setActiveSection] = useState("find");
   const [trips, setTrips] = useState<TripType[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load all scheduled (admin-created) trips on mount
+  // Load all trips on mount; admins see all, others see only upcoming scheduled
   useEffect(() => {
     loadTrips();
   }, []);
@@ -26,7 +27,7 @@ export function Trip() {
   const loadTrips = async () => {
     try {
       setLoading(true);
-      const data = await tripApi.getScheduledTrips();
+      const data = await tripApi.getScheduledTrips(isAdmin ? { all: true } : undefined);
       setTrips(data?.trips ?? []);
     } catch (error) {
       console.error("Failed to load trips:", error);

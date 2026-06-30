@@ -15,6 +15,7 @@ import { MyBookings } from "./pages/MyBookings";
 import { PostsAndComments } from "./pages/PostsAndComments";
 import { NearbyServices } from "./pages/NearbyServices";
 import { Tracking } from "./pages/Tracking";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { BusManagement } from "./pages/admin/BusManagement";
 import { UserManagement } from "./pages/admin/UserManagement";
 import { TripManagement } from "./pages/admin/TripManagement";
@@ -57,20 +58,25 @@ export default function App() {
         <Route path="/otp" element={!isAuthenticated ? <OTP /> : <Navigate to="/dashboard" replace />} />
         <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/dashboard" replace />} />
 
-        {/* Protected Routes */}
+        {/* Protected Routes — all authenticated users */}
         <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/trip" element={<ProtectedRoute><Trip /></ProtectedRoute>} />
-        <Route path="/trips-discovery" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><TripDiscovery /></ProtectedRoute>} />
-        <Route path="/trip/:id" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><TripDetails /></ProtectedRoute>} />
-        <Route path="/trip/:id/seats" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><SeatSelection /></ProtectedRoute>} />
-        <Route path="/trip/:id/booking" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><BookingFlow /></ProtectedRoute>} />
-        <Route path="/trip/:id/payment" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><Payment /></ProtectedRoute>} />
         <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute><PostsAndComments /></ProtectedRoute>} />
         <Route path="/nearby" element={<ProtectedRoute><NearbyServices /></ProtectedRoute>} />
         <Route path="/tracking" element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><Navigate to="/admin/trips" replace /></ProtectedRoute>} />
+
+        {/* Trip browsing — passengers AND admins can view */}
+        <Route path="/trips-discovery" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER, ROLES.SYSTEM_ADMIN]}><TripDiscovery /></ProtectedRoute>} />
+        <Route path="/trip/:id" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER, ROLES.SYSTEM_ADMIN]}><TripDetails /></ProtectedRoute>} />
+        <Route path="/trip/:id/seats" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><SeatSelection /></ProtectedRoute>} />
+        <Route path="/trip/:id/booking" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><BookingFlow /></ProtectedRoute>} />
+        <Route path="/trip/:id/payment" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER]}><Payment /></ProtectedRoute>} />
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><Navigate to="/admin/dashboard" replace /></ProtectedRoute>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><UserManagement /></ProtectedRoute>} />
         <Route path="/admin/buses" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><BusManagement /></ProtectedRoute>} />
         <Route path="/admin/trips" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><TripManagement /></ProtectedRoute>} />
@@ -82,6 +88,7 @@ export default function App() {
         <Route path="/admin/system-health" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><SystemHealth /></ProtectedRoute>} />
         <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><NotificationCenter /></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={[ROLES.SYSTEM_ADMIN]}><Settings /></ProtectedRoute>} />
+
         <Route path="/unauthorized" element={
           <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="text-center">
