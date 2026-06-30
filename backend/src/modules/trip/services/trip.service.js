@@ -79,11 +79,12 @@ const getScheduledTrips = async ({ all = false } = {}) => {
     query = `SELECT * FROM trips ORDER BY scheduled_start_time DESC`;
     params = [];
   } else {
+    // Passenger view — all scheduled trips (no time filter so timezone
+    // differences never accidentally hide newly-created trips)
     query = `
       SELECT *
       FROM trips
       WHERE status = $1
-        AND scheduled_start_time >= now()
       ORDER BY scheduled_start_time ASC
     `;
     params = ['scheduled'];
@@ -93,7 +94,7 @@ const getScheduledTrips = async ({ all = false } = {}) => {
 };
 
 const getNearbyTrips = async ({ origin, destination }) => {
-  const filters = ["status = $1", "scheduled_start_time >= now()"];
+  const filters = ["status = $1"];
   const params = ['scheduled'];
 
   if (origin) {

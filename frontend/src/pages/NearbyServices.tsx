@@ -64,6 +64,81 @@ function Toast({
   );
 }
 
+type FormState = typeof EMPTY_FORM;
+
+/* ── ServiceForm — defined OUTSIDE NearbyServices so it never remounts ── */
+interface ServiceFormProps {
+  formData: FormState;
+  formError: string | null;
+  formLoading: boolean;
+  isEditing: boolean;
+  onChange: (field: keyof FormState, value: string) => void;
+  onMapsLinkChange: (val: string) => void;
+  onCancel: () => void;
+  onSubmit: () => void;
+}
+
+function ServiceForm({
+  formData, formError, formLoading, isEditing,
+  onChange, onMapsLinkChange, onCancel, onSubmit,
+}: ServiceFormProps) {
+  return (
+    <div className="space-y-4">
+      {formError && (
+        <div className="flex items-start gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm">
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+          {formError}
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1.5">Type *</label>
+          <select value={formData.type} onChange={e => onChange("type", e.target.value)}
+            className="w-full px-3 py-2.5 rounded-xl border border-border bg-input-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm">
+            <option value="garage">Garage</option>
+            <option value="fuel_station">Fuel Station</option>
+            <option value="hotel">Hotel</option>
+          </select>
+        </div>
+        <Input label="Name *" value={formData.name} onChange={e => onChange("name", e.target.value)} placeholder="Service name" />
+      </div>
+      <Input label="Address" value={formData.address} onChange={e => onChange("address", e.target.value)} placeholder="Full address" />
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Google Maps Link (auto-extracts coordinates)</label>
+        <input value={formData.maps_link} onChange={e => onMapsLinkChange(e.target.value)}
+          placeholder="https://maps.google.com/..."
+          className="w-full px-4 py-3 rounded-xl border border-border bg-input-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Input label="Latitude *" value={formData.latitude} onChange={e => onChange("latitude", e.target.value)} placeholder="e.g. 9.0192" type="number" />
+        <Input label="Longitude *" value={formData.longitude} onChange={e => onChange("longitude", e.target.value)} placeholder="e.g. 38.7525" type="number" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Input label="Phone" value={formData.phone} onChange={e => onChange("phone", e.target.value)} placeholder="+251 9xx xxx xxx" />
+        <Input label="Description" value={formData.description} onChange={e => onChange("description", e.target.value)} placeholder="Short description" />
+      </div>
+      <div className="flex gap-3 pt-2">
+        <Button variant="secondary" className="flex-1" onClick={onCancel}>Cancel</Button>
+        <Button className="flex-1" loading={formLoading} onClick={onSubmit}>
+          {isEditing ? "Save Changes" : "Create Service"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+  const patterns = [
+    /@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/,
+    /ll=(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return { lat: m[1], lng: m[2] };
+  }
+  return null;
+}
+
 // Extract lat/lng from a Google Maps link
 function extractCoordsFromMapsLink(url: string): { lat: string; lng: string } | null {
   const patterns = [
@@ -78,8 +153,6 @@ function extractCoordsFromMapsLink(url: string): { lat: string; lng: string } | 
   }
   return null;
 }
-
-export function NearbyServices() {
   const { user } = useAuth();
   const isAdmin = user?.role === "system_admin";
 
@@ -178,11 +251,17 @@ export function NearbyServices() {
   };
 
   const handleMapsLinkChange = (val: string) => {
-    setFormData((p) => ({ ...p, maps_link: val }));
     const coords = extractCoordsFromMapsLink(val);
     if (coords) {
-      setFormData((p) => ({ ...p, maps_link: val, latitude: coords.lat, longitude: coords.lng }));
+      setFormData(p => ({ ...p, maps_link: val, latitude: coords.lat, longitude: coords.lng }));
+    } else {
+      setFormData(p => ({ ...p, maps_link: val }));
     }
+  };
+
+  const handleFormChange = (field: keyof typeof EMPTY_FORM, value: string) => {
+    setFormData(p => ({ ...p, [field]: value }));
+    setFormError(null);
   };
 
   const handleCreate = async () => {
@@ -243,49 +322,11 @@ export function NearbyServices() {
     }
   };
 
-  const ServiceForm = () => (
-    <div className="space-y-4">
-      {formError && (
-        <div className="flex items-start gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm">
-          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-          {formError}
-        </div>
-      )}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">Type *</label>
-          <select value={formData.type} onChange={e => setFormData(p => ({ ...p, type: e.target.value as ServiceType }))}
-            className="w-full px-3 py-2.5 rounded-xl border border-border bg-input-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm">
-            <option value="garage">Garage</option>
-            <option value="fuel_station">Fuel Station</option>
-            <option value="hotel">Hotel</option>
-          </select>
-        </div>
-        <Input label="Name *" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} placeholder="Service name" />
-      </div>
-      <Input label="Address" value={formData.address} onChange={e => setFormData(p => ({ ...p, address: e.target.value }))} placeholder="Full address" />
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-1.5">Google Maps Link (auto-extracts coordinates)</label>
-        <input value={formData.maps_link} onChange={e => handleMapsLinkChange(e.target.value)}
-          placeholder="https://maps.google.com/..."
-          className="w-full px-4 py-3 rounded-xl border border-border bg-input-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Input label="Latitude *" value={formData.latitude} onChange={e => setFormData(p => ({ ...p, latitude: e.target.value }))} placeholder="e.g. 9.0192" type="number" />
-        <Input label="Longitude *" value={formData.longitude} onChange={e => setFormData(p => ({ ...p, longitude: e.target.value }))} placeholder="e.g. 38.7525" type="number" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Input label="Phone" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} placeholder="+251 9xx xxx xxx" />
-        <Input label="Description" value={formData.description} onChange={e => setFormData(p => ({ ...p, description: e.target.value }))} placeholder="Short description" />
-      </div>
-      <div className="flex gap-3 pt-2">
-        <Button variant="secondary" className="flex-1" onClick={() => { setIsCreateOpen(false); setEditService(null); setFormError(null); }}>Cancel</Button>
-        <Button className="flex-1" loading={formLoading} onClick={editService ? handleUpdate : handleCreate}>
-          {editService ? "Save Changes" : "Create Service"}
-        </Button>
-      </div>
-    </div>
-  );
+  const handleFormCancel = () => {
+    setIsCreateOpen(false);
+    setEditService(null);
+    setFormError(null);
+  };
 
   if (loading) return (
     <MainLayout>
@@ -443,12 +484,20 @@ export function NearbyServices() {
 
         {/* Create Modal */}
         <Modal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="Add New Service" maxWidth="lg">
-          <ServiceForm />
+          <ServiceForm
+            formData={formData} formError={formError} formLoading={formLoading}
+            isEditing={false} onChange={handleFormChange} onMapsLinkChange={handleMapsLinkChange}
+            onCancel={handleFormCancel} onSubmit={handleCreate}
+          />
         </Modal>
 
         {/* Edit Modal */}
         <Modal isOpen={!!editService} onClose={() => setEditService(null)} title="Edit Service" maxWidth="lg">
-          <ServiceForm />
+          <ServiceForm
+            formData={formData} formError={formError} formLoading={formLoading}
+            isEditing={true} onChange={handleFormChange} onMapsLinkChange={handleMapsLinkChange}
+            onCancel={handleFormCancel} onSubmit={handleUpdate}
+          />
         </Modal>
       </div>
 

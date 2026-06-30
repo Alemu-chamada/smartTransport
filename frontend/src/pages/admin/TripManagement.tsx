@@ -49,6 +49,81 @@ const EMPTY_FORM = {
 
 type FormData = typeof EMPTY_FORM;
 
+/* ── Trip form — defined OUTSIDE TripManagement so it never remounts ── */
+interface TripFormProps {
+  formData: FormData;
+  formError: string | null;
+  buses: BusType[];
+  drivers: Driver[];
+  onChange: (field: keyof FormData, value: string | number) => void;
+}
+
+function TripForm({ formData, formError, buses, drivers, onChange }: TripFormProps) {
+  return (
+    <div className="space-y-4">
+      {formError && (
+        <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm">
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+          <span>{formError}</span>
+        </div>
+      )}
+      {/* Bus */}
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-1.5">
+          <Bus className="h-4 w-4" /> Bus <span className="text-muted-foreground font-normal">(optional)</span>
+        </label>
+        {buses.length === 0
+          ? <p className="p-3 bg-muted rounded-xl text-sm text-muted-foreground">No buses found — trip can be created without one.</p>
+          : <select value={formData.bus_id}
+              onChange={e => onChange("bus_id", e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="">Select a bus… (optional)</option>
+              {buses.map(b => <option key={b.id} value={b.id}>{b.plate_number} — {b.capacity} seats</option>)}
+            </select>}
+      </div>
+      {/* Driver */}
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-1.5">
+          <User className="h-4 w-4" /> Driver *
+        </label>
+        {drivers.length === 0
+          ? <p className="p-3 bg-muted rounded-xl text-sm text-muted-foreground">No drivers found. Assign the driver role to a user first.</p>
+          : <select value={formData.driver_id}
+              onChange={e => onChange("driver_id", e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
+              <option value="">Select a driver *</option>
+              {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}{d.phone ? ` (${d.phone})` : ""}</option>)}
+            </select>}
+      </div>
+      {/* Origin / Destination */}
+      <div className="grid grid-cols-2 gap-4">
+        <Input label="From (Origin) *" placeholder="e.g. Addis Ababa"
+          value={formData.origin} onChange={e => onChange("origin", e.target.value)} />
+        <Input label="To (Destination) *" placeholder="e.g. Dire Dawa"
+          value={formData.destination} onChange={e => onChange("destination", e.target.value)} />
+      </div>
+      {/* Time / Capacity */}
+      <div className="grid grid-cols-2 gap-4">
+        <Input label="Departure Time *" type="datetime-local"
+          value={formData.scheduled_start_time}
+          onChange={e => onChange("scheduled_start_time", e.target.value)} />
+        <Input label="Seat Capacity *" type="number" placeholder="40"
+          value={formData.total_capacity}
+          onChange={e => onChange("total_capacity", parseInt(e.target.value) || 0)} />
+      </div>
+      {/* Fare / Currency */}
+      <div className="grid grid-cols-2 gap-4">
+        <Input label="Fare per Seat" type="number" placeholder="150"
+          value={formData.fare}
+          onChange={e => onChange("fare", parseFloat(e.target.value) || 0)} />
+        <Input label="Currency" placeholder="ETB"
+          value={formData.currency}
+          onChange={e => onChange("currency", e.target.value)} />
+      </div>
+    </div>
+  );
+}
+
 /* ──────────────────────────────────────────────────────────────────────── */
 export function TripManagement() {
   const [searchQuery, setSearchQuery]     = useState("");
@@ -263,76 +338,6 @@ export function TripManagement() {
     return matchesSearch && matchesStatus;
   });
 
-  /* ── Shared form UI ────────────────────────────────────────────────── */
-  const TripForm = () => (
-    <div className="space-y-4">
-      {formError && (
-        <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm">
-          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-          <span>{formError}</span>
-        </div>
-      )}
-
-      {/* Bus */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-1.5">
-          <Bus className="h-4 w-4" /> Bus <span className="text-muted-foreground font-normal">(optional)</span>
-        </label>
-        {buses.length === 0
-          ? <p className="p-3 bg-muted rounded-xl text-sm text-muted-foreground">No buses found — trip can be created without one.</p>
-          : <select value={formData.bus_id}
-              onChange={e => handleChange("bus_id", e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
-              <option value="">Select a bus… (optional)</option>
-              {buses.map(b => <option key={b.id} value={b.id}>{b.plate_number} — {b.capacity} seats</option>)}
-            </select>}
-      </div>
-
-      {/* Driver */}
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-1.5">
-          <User className="h-4 w-4" /> Driver *
-        </label>
-        {drivers.length === 0
-          ? <p className="p-3 bg-muted rounded-xl text-sm text-muted-foreground">No drivers found. Assign the driver role to a user first.</p>
-          : <select value={formData.driver_id}
-              onChange={e => handleChange("driver_id", e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-input-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary">
-              <option value="">Select a driver *</option>
-              {drivers.map(d => <option key={d.id} value={d.id}>{d.full_name}{d.phone ? ` (${d.phone})` : ""}</option>)}
-            </select>}
-      </div>
-
-      {/* Origin / Destination */}
-      <div className="grid grid-cols-2 gap-4">
-        <Input label="From (Origin) *" placeholder="e.g. Addis Ababa"
-          value={formData.origin} onChange={e => handleChange("origin", e.target.value)} />
-        <Input label="To (Destination) *" placeholder="e.g. Dire Dawa"
-          value={formData.destination} onChange={e => handleChange("destination", e.target.value)} />
-      </div>
-
-      {/* Time / Capacity */}
-      <div className="grid grid-cols-2 gap-4">
-        <Input label="Departure Time *" type="datetime-local"
-          value={formData.scheduled_start_time}
-          onChange={e => handleChange("scheduled_start_time", e.target.value)} />
-        <Input label="Seat Capacity *" type="number" placeholder="40"
-          value={formData.total_capacity}
-          onChange={e => handleChange("total_capacity", parseInt(e.target.value) || 0)} />
-      </div>
-
-      {/* Fare / Currency */}
-      <div className="grid grid-cols-2 gap-4">
-        <Input label="Fare per Seat" type="number" placeholder="150"
-          value={formData.fare}
-          onChange={e => handleChange("fare", parseFloat(e.target.value) || 0)} />
-        <Input label="Currency" placeholder="ETB"
-          value={formData.currency}
-          onChange={e => handleChange("currency", e.target.value)} />
-      </div>
-    </div>
-  );
-
   /* ── Render ────────────────────────────────────────────────────────── */
   return (
     <MainLayout>
@@ -376,7 +381,7 @@ export function TripManagement() {
         <Modal isOpen={isCreateOpen} onClose={() => { setIsCreateOpen(false); setFormError(null); }}
           title="Create New Trip" maxWidth="lg">
           <div className="space-y-4">
-            <TripForm />
+            <TripForm formData={formData} formError={formError} buses={buses} drivers={drivers} onChange={handleChange} />
             <div className="flex gap-3 pt-2">
               <Button variant="secondary" className="flex-1"
                 onClick={() => { setIsCreateOpen(false); setFormError(null); }} disabled={loading}>
@@ -394,7 +399,7 @@ export function TripManagement() {
         <Modal isOpen={!!editTrip} onClose={() => { setEditTrip(null); setFormError(null); }}
           title="Edit Trip" maxWidth="lg">
           <div className="space-y-4">
-            <TripForm />
+            <TripForm formData={formData} formError={formError} buses={buses} drivers={drivers} onChange={handleChange} />
             <div className="flex gap-3 pt-2">
               <Button variant="secondary" className="flex-1"
                 onClick={() => { setEditTrip(null); setFormError(null); }} disabled={loading}>

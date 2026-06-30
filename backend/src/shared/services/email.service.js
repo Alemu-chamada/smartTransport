@@ -32,78 +32,132 @@ const initializeBrevo = () => {
 };
 
 const generateOtpEmailHtml = (otp) => {
-  const digits = String(otp).split('');
-  const digitBoxes = digits.map(d =>
-    `<span style="display:inline-block;width:44px;height:56px;line-height:56px;text-align:center;font-size:28px;font-weight:800;color:#4f46e5;background:#f0f0ff;border:2px solid #c7d2fe;border-radius:10px;margin:0 4px;font-family:'Courier New',monospace;">${d}</span>`
-  ).join('');
+  const code = String(otp);
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Transport — Verification Code</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Your SmartTransport Verification Code</title>
+  <!--[if mso]>
+  <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+  <![endif]-->
+  <style>
+    @media only screen and (max-width:600px){
+      .email-wrapper { padding: 16px 8px !important; }
+      .email-card    { border-radius: 16px !important; }
+      .header-cell   { padding: 32px 24px 24px !important; }
+      .body-cell     { padding: 32px 24px 24px !important; }
+      .footer-cell   { padding: 20px 24px !important; }
+      .otp-code      { font-size: 40px !important; letter-spacing: 10px !important; }
+      .otp-box       { padding: 24px 16px !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 16px;">
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+    class="email-wrapper" style="background-color:#f0f4f8;padding:40px 16px;">
     <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
-        <!-- Header -->
+      <!-- Card -->
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+        class="email-card" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- ── Header ── -->
         <tr>
-          <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);border-radius:20px 20px 0 0;padding:40px 40px 32px;text-align:center;">
-            <div style="font-size:52px;margin-bottom:12px;">🚌</div>
-            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.3px;">Smart Transport System</h1>
-            <p style="margin:6px 0 0;color:rgba(255,255,255,0.7);font-size:14px;">Your journey, secured.</p>
+          <td class="header-cell"
+            style="background:linear-gradient(135deg,#FF4103 0%,#ff6a35 100%);padding:40px 48px 36px;text-align:center;">
+            <!-- Logo mark -->
+            <table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 16px;">
+              <tr>
+                <td style="background:rgba(255,255,255,0.2);border-radius:14px;width:52px;height:52px;text-align:center;vertical-align:middle;">
+                  <span style="font-size:26px;font-weight:900;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:52px;">ST</span>
+                </td>
+                <td style="padding-left:12px;vertical-align:middle;">
+                  <span style="font-size:22px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">Smart</span><span style="font-size:22px;font-weight:900;color:rgba(255,255,255,0.75);letter-spacing:-0.5px;">Transport</span>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.85);font-weight:500;">Security Verification</p>
           </td>
         </tr>
 
-        <!-- Body -->
+        <!-- ── Body ── -->
         <tr>
-          <td style="background:#ffffff;padding:40px 40px 32px;">
-            <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#6366f1;text-transform:uppercase;letter-spacing:1px;">Security Verification</p>
-            <h2 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0f172a;">Here's your one-time code</h2>
-            <p style="margin:0 0 28px;font-size:15px;color:#64748b;line-height:1.6;">Use the code below to verify your identity and continue. It was made just for you and expires in <strong style="color:#0f172a;">5 minutes</strong>.</p>
+          <td class="body-cell" style="padding:40px 48px 36px;background:#ffffff;">
+            <h2 style="margin:0 0 10px;font-size:24px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;">Your one-time code</h2>
+            <p style="margin:0 0 28px;font-size:15px;color:#64748b;line-height:1.6;">
+              Use this code to complete your verification. It expires in <strong style="color:#0f172a;">5&nbsp;minutes</strong>.
+            </p>
 
-            <!-- OTP Digits -->
-            <div style="text-align:center;margin:0 0 28px;padding:28px 20px;background:#fafafa;border-radius:16px;border:1px solid #e2e8f0;">
-              ${digitBoxes}
-              <p style="margin:16px 0 0;font-size:12px;color:#94a3b8;">Single-use code · Expires in 5 minutes</p>
-            </div>
+            <!-- ── OTP Code Box ── -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td class="otp-box" align="center"
+                  style="background:#fff8f5;border:2px solid #FF4103;border-radius:16px;padding:28px 24px;">
+                  <!--[if mso]>
+                  <table role="presentation" align="center" cellpadding="0" cellspacing="0"><tr><td>
+                  <![endif]-->
+                  <span class="otp-code"
+                    style="display:inline-block;font-size:48px;font-weight:900;letter-spacing:14px;color:#FF4103;font-family:'Courier New',Courier,monospace;white-space:nowrap;line-height:1.1;">${code}</span>
+                  <!--[if mso]>
+                  </td></tr></table>
+                  <![endif]-->
+                  <p style="margin:14px 0 0;font-size:12px;color:#94a3b8;letter-spacing:0.3px;">
+                    Single-use &nbsp;·&nbsp; Expires in 5 minutes
+                  </p>
+                </td>
+              </tr>
+            </table>
 
-            <!-- Security Alert -->
-            <div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:10px;padding:16px 20px;margin-bottom:28px;">
-              <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
-                🔒 <strong>Never share this code</strong> with anyone — not even our team. Smart Transport will <em>never</em> ask for your OTP by phone or email.
-              </p>
-            </div>
+            <!-- ── Security notice ── -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
+              <tr>
+                <td style="background:#fffbeb;border-left:4px solid #f59e0b;border-radius:8px;padding:14px 18px;">
+                  <p style="margin:0;font-size:13px;color:#92400e;line-height:1.5;">
+                    🔒 <strong>Never share this code</strong> — not even with our team. SmartTransport will never ask for your OTP by phone or email.
+                  </p>
+                </td>
+              </tr>
+            </table>
 
-            <p style="margin:0;font-size:14px;color:#94a3b8;line-height:1.6;">If you didn't request this code, you can safely ignore this email. No action is needed.</p>
-          </td>
-        </tr>
-
-        <!-- Divider with tagline -->
-        <tr>
-          <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);padding:24px 40px;text-align:center;">
-            <p style="margin:0;color:rgba(255,255,255,0.9);font-size:14px;font-weight:500;font-style:italic;">
-              "Connecting people, simplifying journeys, building smarter transportation — every day."
+            <p style="margin:24px 0 0;font-size:13px;color:#94a3b8;line-height:1.6;">
+              If you didn't request this, you can safely ignore this email.
             </p>
           </td>
         </tr>
 
-        <!-- Footer -->
+        <!-- ── Tagline band ── -->
         <tr>
-          <td style="background:#f8fafc;border-radius:0 0 20px 20px;padding:24px 40px;text-align:center;border:1px solid #e2e8f0;border-top:none;">
-            <p style="margin:0 0 4px;font-size:13px;color:#475569;font-weight:600;">Smart Transport Management System</p>
+          <td style="background:#001621;padding:20px 48px;text-align:center;">
+            <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.6);font-style:italic;line-height:1.5;">
+              "Connecting people, simplifying journeys, building smarter transportation."
+            </p>
+          </td>
+        </tr>
+
+        <!-- ── Footer ── -->
+        <tr>
+          <td class="footer-cell"
+            style="background:#f8fafc;border-radius:0 0 20px 20px;padding:24px 48px;text-align:center;border-top:1px solid #e2e8f0;">
+            <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#475569;">SmartTransport Management System</p>
             <p style="margin:0;font-size:12px;color:#94a3b8;">
-              <a href="mailto:smarttransportserv@gmail.com" style="color:#6366f1;text-decoration:none;">smarttransportserv@gmail.com</a>
+              <a href="mailto:smarttransportserv@gmail.com"
+                style="color:#FF4103;text-decoration:none;">smarttransportserv@gmail.com</a>
+              &nbsp;·&nbsp; Addis Ababa, Ethiopia
             </p>
           </td>
         </tr>
 
       </table>
+      <!-- /Card -->
+
     </td></tr>
   </table>
+
 </body>
 </html>`;
 };
