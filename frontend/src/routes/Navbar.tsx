@@ -822,7 +822,7 @@ export function Navbar() {
                 )}
               </AnimatePresence>
             </div>
-
+          </div>
 
           <div className="md:hidden" ref={mobileMenuRef}>
             <button
