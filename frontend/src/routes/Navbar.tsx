@@ -256,7 +256,13 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border">
+    <nav
+      className="sticky top-0 z-30 backdrop-blur-xl border-b"
+      style={{
+        backgroundColor: 'rgba(255, 249, 250, 0.92)',
+        borderColor: 'rgba(0, 22, 33, 0.08)',
+      }}
+    >
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
@@ -274,8 +280,14 @@ export function Navbar() {
                     to={item.path}
                     className="px-4 py-2 rounded-xl text-sm font-semibold transition-colors"
                     style={{
-                      color: isActive ? '#FF4103' : undefined,
-                      backgroundColor: isActive ? 'rgba(255, 65, 3, 0.07)' : undefined,
+                      color: isActive ? '#FF4103' : '#001621',
+                      backgroundColor: isActive ? 'rgba(255, 65, 3, 0.07)' : 'transparent',
+                    }}
+                    onMouseEnter={e => {
+                      if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,22,33,0.05)';
+                    }}
+                    onMouseLeave={e => {
+                      if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                     }}
                   >
                     {item.label}
@@ -290,11 +302,14 @@ export function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-muted transition-colors relative"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl transition-colors"
+                style={{ color: '#001621' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,22,33,0.05)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
               >
-                <Bell className="h-5 w-5 text-foreground" />
+                <Bell className="h-5 w-5" />
                 {notifications.filter((n) => !n.is_read).length > 0 && (
-                  <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
+                  <span className="absolute top-1 right-1 h-2 w-2 bg-[#FF4103] rounded-full" />
                 )}
               </button>
 
@@ -341,12 +356,16 @@ export function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-muted transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl transition-colors"
+                style={{ color: '#001621' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,22,33,0.05)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
               >
-                <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-primary-foreground" />
+                <div className="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #FF4103 0%, #FFBE0B 100%)' }}>
+                  <User className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-sm text-foreground">{user?.full_name || 'User'}</span>
+                <span className="text-sm font-semibold" style={{ color: '#001621' }}>{user?.full_name || 'User'}</span>
               </button>
 
               <AnimatePresence>
@@ -744,20 +763,16 @@ export function Navbar() {
               </AnimatePresence>
             </div>
 
-            {user?.role === 'system_admin' && (
-              <Link to="/admin/notifications" className="relative p-2 rounded-xl hover:bg-muted transition-colors">
-                <Bell className="h-5 w-5 text-foreground" />
-                <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">3</span>
-              </Link>
-            )}
-          </div>
 
           <div className="md:hidden" ref={mobileMenuRef}>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl hover:bg-muted transition-colors"
+              className="p-2 rounded-xl transition-colors"
+              style={{ color: '#001621' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,22,33,0.05)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6 text-foreground" /> : <Menu className="h-6 w-6 text-foreground" />}
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
@@ -769,7 +784,8 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-border bg-background"
+            className="md:hidden border-t"
+            style={{ backgroundColor: 'rgba(255,249,250,0.97)', borderColor: 'rgba(0,22,33,0.08)' }}
           >
             <div className="px-4 py-3 space-y-1">
               {navItems.map((item) => {
@@ -784,8 +800,8 @@ export function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-4 py-3 rounded-xl text-sm font-semibold transition-colors"
                     style={{
-                      color: isActive ? '#FF4103' : undefined,
-                      backgroundColor: isActive ? 'rgba(255, 65, 3, 0.07)' : undefined,
+                      color: isActive ? '#FF4103' : '#001621',
+                      backgroundColor: isActive ? 'rgba(255, 65, 3, 0.07)' : 'transparent',
                     }}
                   >
                     {item.label}
@@ -794,7 +810,10 @@ export function Navbar() {
               })}
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-3 flex items-center gap-2 rounded-xl text-left hover:bg-muted transition-colors text-foreground"
+                className="w-full px-4 py-3 flex items-center gap-2 rounded-xl text-left transition-colors text-sm font-semibold"
+                style={{ color: '#001621' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(0,22,33,0.05)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
               >
                 <LogOut className="h-4 w-4" />
                 <span>Logout</span>
