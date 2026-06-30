@@ -148,19 +148,13 @@ export const authApi = {
   },
 
   forgotPassword: async (data: { email: string }) => {
-    const response = await apiService.post<{ success: boolean; message: string; data: any }>(
-      '/auth/forgot-password',
-      data
-    );
-    return response.data;
+    const response = await apiService.post<{ success: boolean; message: string; data: any }>('/auth/forgot-password', data);
+    return response.data.data;
   },
 
   resetPassword: async (data: { email: string; otp: string; new_password: string }) => {
-    const response = await apiService.post<{ success: boolean; message: string; data: any }>(
-      '/auth/reset-password',
-      data
-    );
-    return response.data;
+    const response = await apiService.post<{ success: boolean; message: string; data: any }>('/auth/reset-password', data);
+    return response.data.data;
   },
 
   logout: async () => {
@@ -183,16 +177,6 @@ export const authApi = {
     if (!response?.data?.data) {
       throw new Error('Invalid response from server');
     }
-    return response.data.data;
-  },
-
-  forgotPassword: async (data: { email: string }) => {
-    const response = await apiService.post<{ success: boolean; message: string; data: any }>('/auth/forgot-password', data);
-    return response.data.data;
-  },
-
-  resetPassword: async (data: { email: string; otp: string; new_password: string }) => {
-    const response = await apiService.post<{ success: boolean; message: string; data: any }>('/auth/reset-password', data);
     return response.data.data;
   },
 };
