@@ -5,6 +5,7 @@ interface MainLayoutProps {
   children: React.ReactNode;
 }
 
+// AuthFooter is rendered for ALL authenticated users including System Admin
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
