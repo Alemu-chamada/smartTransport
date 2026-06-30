@@ -67,7 +67,7 @@ export function Payment() {
 
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground text-center">
-                    Payment secured by TMS Payment Gateway
+                    Payment secured by SmartTransport Payment Gateway
                   </p>
                   <Button className="w-full" size="lg" onClick={handlePayment}>
                     Pay Now

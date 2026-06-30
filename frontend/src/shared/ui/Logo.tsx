@@ -9,7 +9,7 @@ export function Logo({ variant = "dark", size = "md" }: LogoProps) {
   const iconSize = size === "sm" ? "h-8 w-8" : size === "lg" ? "h-12 w-12" : "h-10 w-10";
   const textSize = size === "sm" ? "text-base" : size === "lg" ? "text-2xl" : "text-xl";
   const primaryText = variant === "light" ? "text-white" : "text-gray-900";
-  const accentText = variant === "light" ? "text-indigo-300" : "text-primary";
+  const accentText = variant === "light" ? "text-indigo-300" : "text-[#FF4103]";
 
   return (
     <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">

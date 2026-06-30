@@ -203,9 +203,9 @@ export function LandingPage() {
   ];
 
   const testimonials = [
-    { name: "Sarah Johnson",    role: "Frequent Traveler", review: "TMS has made booking trips so much easier! The real-time tracking feature is a game-changer." },
-    { name: "Michael Chen",     role: "Fleet Manager",     review: "Managing our transportation operations has never been more efficient. The admin dashboard is fantastic!" },
-    { name: "Emily Rodriguez",  role: "Business Owner",    review: "Secure payments and reliable service. Our employees love using TMS for their business trips." },
+    { name: "Sarah Johnson",   role: "Frequent Traveler", review: "SmartTransport has made booking trips so much easier! The real-time tracking feature is a game-changer." },
+    { name: "Michael Chen",    role: "Fleet Manager",     review: "Managing our transportation operations has never been more efficient. The admin dashboard is fantastic!" },
+    { name: "Emily Rodriguez", role: "Business Owner",    review: "Secure payments and reliable service. Our employees love using SmartTransport for their business trips." },
   ];
 
   const faqs = [
@@ -449,16 +449,16 @@ export function LandingPage() {
           <div className="text-center mb-14">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3"
               style={{ backgroundColor: `${C.red}12`, color: C.red }}>Impact</span>
-            <h2 className="text-3xl font-black mt-2" style={{ color: C.navy }}>Numbers that speak for themselves</h2>
+            <h2 className="text-3xl font-black mt-2" style={{ color: "#171717" }}>Numbers that speak for themselves</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
             {[
-              { value: "1,200", suffix: "+", label: "Users Registered",  icon: Users,       color: C.red    },
-              { value: "3,800", suffix: "+", label: "Bookings Made",     icon: ShieldCheck, color: C.green  },
-              { value: "250",   suffix: "+", label: "Trips Scheduled",   icon: Bus,         color: C.gold   },
-              { value: "3",     suffix: "s", label: "Avg. Booking Time", icon: Zap,         color: C.purple },
-              { value: "100",   suffix: "%", label: "OTP Secured",       icon: ShieldCheck, color: "#FD1843" },
-              { value: "6",     suffix: "+", label: "User Roles",        icon: Users,       color: "#2D3E2C" },
+              { value: "1,200", suffix: "+", label: "Users Registered",  icon: Users,       color: "#000000ff"    },
+              { value: "3,800", suffix: "+", label: "Bookings Made",     icon: ShieldCheck, color: "#000000ff"  },
+              { value: "250",   suffix: "+", label: "Trips Scheduled",   icon: Bus,         color: "#000000ff"   },
+              { value: "3",     suffix: "s", label: "Avg. Booking Time", icon: Zap,         color: "#000000ff" },
+              { value: "100",   suffix: "%", label: "OTP Secured",       icon: ShieldCheck, color: "#000000ff" },
+              { value: "6",     suffix: "+", label: "User Roles",        icon: Users,       color: "#000000ff" },
             ].map((s, i) => (
               <motion.div key={s.label}
                 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -469,11 +469,11 @@ export function LandingPage() {
                   style={{ backgroundColor: `${s.color}15` }}>
                   <s.icon className="h-6 w-6" style={{ color: s.color }} />
                 </div>
-                <div className="text-4xl font-black mb-1" style={{ color: C.navy }}>
+                <div className="text-4xl font-black mb-1" style={{ color: "#171717" }}>
                   {s.value}<span style={{ color: s.color }}>{s.suffix}</span>
                 </div>
                 <div className="w-6 h-0.5 mx-auto mb-2 rounded-full" style={{ backgroundColor: s.color }} />
-                <div className="text-xs font-bold uppercase tracking-widest" style={{ color: "#9ca3af" }}>{s.label}</div>
+                <div className="text-xs font-bold uppercase tracking-widest" style={{ color: "#171717" }}>{s.label}</div>
               </motion.div>
             ))}
           </div>

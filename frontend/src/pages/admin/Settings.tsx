@@ -43,7 +43,7 @@ export function Settings() {
               <Input
                 label="Contact Email"
                 type="email"
-                defaultValue="support@tms.com"
+                defaultValue="support@smarttransport.app"
               />
               <Input
                 label="Contact Phone"
@@ -53,7 +53,7 @@ export function Settings() {
               <Input
                 label="Support URL"
                 type="url"
-                defaultValue="https://support.tms.com"
+                defaultValue="https://smarttransport.app/support"
               />
             </div>
 
@@ -228,14 +228,14 @@ export function Settings() {
             <div className="space-y-4">
               <Input label="SMTP Host" placeholder="smtp.example.com" />
               <Input label="SMTP Port" type="number" placeholder="587" />
-              <Input label="SMTP Username" placeholder="noreply@tms.com" />
+              <Input label="SMTP Username" placeholder="noreply@smarttransport.app" />
               <Input
                 label="SMTP Password"
                 type="password"
                 placeholder="••••••••"
               />
-              <Input label="From Email" placeholder="noreply@tms.com" />
-              <Input label="From Name" placeholder="TMS Notifications" />
+              <Input label="From Email" placeholder="noreply@smarttransport.app" />
+              <Input label="From Name" placeholder="SmartTransport Notifications" />
             </div>
 
             <div className="flex justify-end mt-6">
