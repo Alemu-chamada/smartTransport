@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { Mail, Phone, MapPin, Globe, Github, Linkedin, ExternalLink, MessageSquare, Bus, Navigation } from "lucide-react";
 import { LandingNav, LandingFooter } from "./LandingPage";
+import { MainLayout } from "../routes/MainLayout";
 
 const C = { red: "#FF4103", navy: "#001621", green: "#21F1A8", gold: "#FFBE0B", purple: "#3C1A47", g2: "#59C749" };
 
@@ -46,7 +47,16 @@ export function ContactPage() {
   return (
     <div style={{ backgroundColor: "#FFF9FA" }}>
       <LandingNav active="/contact" />
+      <ContactContent />
+      <LandingFooter />
+    </div>
+  );
+}
 
+/* ─── Reusable contact body (hero + cards + CTA) — used by both pages ─────── */
+export function ContactContent() {
+  return (
+    <>
       {/* Hero */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -75,22 +85,16 @@ export function ContactPage() {
       <section className="pb-28">
         <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
 
-          {/* DESKTOP: absolute positioned — matches photo */}
+          {/* DESKTOP */}
           <div className="hidden lg:block relative mx-auto" style={{ maxWidth: 920, height: CONTAINER_H }}>
-
-            {/* System card — top-left */}
             <motion.div className="absolute top-0 left-0" style={{ width: CARD_W }}
               initial={{ opacity: 0, x: -28 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.65 }}>
               <SystemCard />
             </motion.div>
-
-            {/* Metro connector — SVG overlay, pointer-events none */}
             <div className="absolute inset-0 pointer-events-none">
               <MetroLine />
             </div>
-
-            {/* Developer card — bottom-right */}
             <motion.div className="absolute" style={{ top: DEV_TOP, left: DEV_LEFT, width: DEV_W }}
               initial={{ opacity: 0, x: 28 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.65, delay: 0.2 }}>
@@ -98,7 +102,7 @@ export function ContactPage() {
             </motion.div>
           </div>
 
-          {/* TABLET (md): side-by-side with thin connector */}
+          {/* TABLET */}
           <div className="hidden md:flex lg:hidden items-start gap-8">
             <motion.div className="flex-1" initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.6 }}>
@@ -115,7 +119,7 @@ export function ContactPage() {
             </motion.div>
           </div>
 
-          {/* MOBILE: stacked */}
+          {/* MOBILE */}
           <div className="md:hidden flex flex-col gap-6">
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.5 }}>
@@ -166,13 +170,18 @@ export function ContactPage() {
           </motion.div>
         </div>
       </section>
-
-      <LandingFooter />
-    </div>
+    </>
   );
 }
 
-/* ─── System Card ────────────────────────────────────────────────────────── */
+/* ─── Authenticated contact page (uses MainLayout + same content) ─────────── */
+export function AuthContactPage() {
+  return (
+    <MainLayout>
+      <ContactContent />
+    </MainLayout>
+  );
+}
 function SystemCard() {
   return (
     <motion.div whileHover={{ y: -4, boxShadow: `0 20px 48px rgba(0,22,33,0.14)` }}

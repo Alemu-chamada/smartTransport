@@ -30,7 +30,7 @@ import { ProtectedRoute, ROLES } from "./routes/ProtectedRoute";
 import { LandingPage } from "./pages/LandingPage";
 import { FeaturesPage } from "./pages/FeaturesPage";
 import { AboutPage } from "./pages/AboutPage";
-import { ContactPage } from "./pages/ContactPage";
+import { ContactPage, AuthContactPage } from "./pages/ContactPage";
 import { ForgotPassword } from "./features/auth/components/ForgotPassword";
 import { useAuth } from "./providers/AuthProvider";
 
@@ -66,6 +66,13 @@ export default function App() {
         <Route path="/community" element={<ProtectedRoute><PostsAndComments /></ProtectedRoute>} />
         <Route path="/nearby" element={<ProtectedRoute><NearbyServices /></ProtectedRoute>} />
         <Route path="/tracking" element={<ProtectedRoute><Tracking /></ProtectedRoute>} />
+
+        {/* Authenticated contact — non-admin users only */}
+        <Route path="/app/contact" element={
+          <ProtectedRoute allowedRoles={[ROLES.PASSENGER, ROLES.DRIVER, ROLES.TRAFFIC_AUTHORITY, ROLES.GARAGE_MANAGER, ROLES.FUEL_STATION_MANAGER]}>
+            <AuthContactPage />
+          </ProtectedRoute>
+        } />
 
         {/* Trip browsing — passengers AND admins can view */}
         <Route path="/trips-discovery" element={<ProtectedRoute allowedRoles={[ROLES.PASSENGER, ROLES.SYSTEM_ADMIN]}><TripDiscovery /></ProtectedRoute>} />

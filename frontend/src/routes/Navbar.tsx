@@ -259,6 +259,7 @@ export function Navbar() {
     { label: 'My Bookings', path: '/my-bookings' },
     { label: 'Community', path: '/community' },
     { label: 'Nearby Services', path: '/nearby' },
+    ...(user?.role !== 'system_admin' ? [{ label: 'Contact', path: '/app/contact' }] : []),
     ...(user?.role === 'system_admin' ? [{ label: 'Admin', path: '/admin/dashboard' }] : []),
   ];
 
