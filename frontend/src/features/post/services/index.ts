@@ -20,6 +20,8 @@ export interface Comment {
   author_name?: string;
   parent_id?: string;
   content: string;
+  like_count?: number;
+  is_liked?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -111,6 +113,14 @@ export const postApi = {
 
   editComment: async (postId: string, commentId: string, data: { content: string }) => {
     const response = await apiService.patch<{ success: boolean; message: string; data: { comment: Comment } }>(`/posts/${postId}/comments/${commentId}`, data);
+    if (!response?.data?.data) throw new Error('Invalid response from server');
+    return response.data.data;
+  },
+
+  toggleCommentLike: async (postId: string, commentId: string): Promise<{ comment: Comment }> => {
+    const response = await apiService.post<{
+      success: boolean; message: string; data: { comment: Comment };
+    }>(`/posts/${postId}/comments/${commentId}/like`, {});
     if (!response?.data?.data) throw new Error('Invalid response from server');
     return response.data.data;
   },

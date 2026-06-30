@@ -19,14 +19,25 @@ const getPostById = asyncHandler(async (req, res) => {
 });
 
 const getCommentsByPostId = asyncHandler(async (req, res) => {
-  const comments = await postService.getCommentsByPostId(req.params.id);
-  return success(res, {
-    message: "Comments retrieved successfully",
-    data: { comments }
-  });
+  const comments = await postService.getCommentsByPostId(req.params.id, req.user?.id);
+  return success(res, { message: "Comments retrieved successfully", data: { comments } });
 });
 
-const createPost = asyncHandler(async (req, res) => {
+const toggleLike = asyncHandler(async (req, res) => {
+  const post = await postService.toggleLike({ userId: req.user.id, postId: req.params.id });
+  return success(res, { message: "Like toggled successfully", data: { post } });
+});
+
+const toggleCommentLike = asyncHandler(async (req, res) => {
+  const comment = await postService.toggleCommentLike({ userId: req.user.id, commentId: req.params.commentId });
+  return success(res, { message: "Comment like toggled", data: { comment } });
+});
+
+module.exports = {
+  getAllPosts, getPostById, getCommentsByPostId,
+  createPost, createComment, toggleLike, toggleCommentLike,
+  deletePost, editPost, deleteComment, editComment,
+};
   const post = await postService.createPost({
     userId: req.user.id,
     title: req.body.title,

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, LogOut, Menu, X, Bell, Pencil, Trash2 } from 'lucide-react';
 import { useAuth } from '../providers/AuthProvider';
@@ -43,6 +43,7 @@ export function Navbar() {
     confirm_password: ''
   });
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, user, updateUser } = useAuth();
   
   // Fetch notifications
@@ -267,15 +268,23 @@ export function Navbar() {
             </Link>
 
             <div className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="px-4 py-2 rounded-xl text-foreground hover:bg-muted transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path ||
+                  (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 

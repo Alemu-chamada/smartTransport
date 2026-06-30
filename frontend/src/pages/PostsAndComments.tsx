@@ -123,8 +123,37 @@ export function PostsAndComments() {
       if (data?.post) {
         setPosts((prev) => prev.map((post) => post.id === postId ? data.post : post));
       }
-    } catch (error) {
-      console.error("Failed to toggle like:", error);
+    } catch (error) { console.error("Failed to toggle like:", error); }
+  };
+
+  const handleToggleCommentLike = async (postId: string, commentId: string) => {
+    try {
+      const data = await postApi.toggleCommentLike(postId, commentId);
+      if (data?.comment) {
+        setComments((prev) => ({
+          ...prev,
+          [postId]: prev[postId].map((c) => c.id === commentId ? data.comment : c),
+        }));
+      }
+    } catch (error) { console.error("Failed to toggle comment like:", error); }
+  };
+
+  const [shareToast, setShareToast] = useState<string | null>(null);
+
+  const handleShare = async (postId: string) => {
+    const url = `${window.location.origin}/community#post-${postId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Smart Transport Post", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShareToast("Link copied successfully!");
+        setTimeout(() => setShareToast(null), 3000);
+      }
+    } catch {
+      await navigator.clipboard.writeText(url).catch(() => {});
+      setShareToast("Link copied successfully!");
+      setTimeout(() => setShareToast(null), 3000);
     }
   };
 
@@ -265,25 +294,23 @@ export function PostsAndComments() {
                   <div className="flex items-center gap-6 pb-4 border-b border-border">
                     <button
                       onClick={() => handleToggleLike(post.id)}
-                      className={`flex items-center gap-2 transition-colors ${
-                        post.is_liked ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                      }`}
+                      className="flex items-center gap-2 transition-colors hover:opacity-80"
                     >
-                      <Heart className={`h-5 w-5 ${post.is_liked ? "fill-current" : ""}`} />
-                      <span className="text-sm">{post.like_count || 0}</span>
+                      <Heart className={`h-5 w-5 transition-colors ${post.is_liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+                      <span className={`text-sm font-medium ${post.is_liked ? "text-red-500" : "text-muted-foreground"}`}>{post.like_count || 0}</span>
                     </button>
                     <button
                       onClick={() => toggleComments(post.id)}
-                      className={`flex items-center gap-2 transition-colors ${
-                        expandedComments[post.id] ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`flex items-center gap-2 transition-colors ${expandedComments[post.id] ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
                     >
                       <MessageCircle className="h-5 w-5" />
                       <span className="text-sm">
                         {commentsLoading[post.id] ? "..." : `${comments[post.id]?.length ?? 0} comments`}
                       </span>
                     </button>
-                    <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                    <button
+                      onClick={() => handleShare(post.id)}
+                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
                       <Share2 className="h-5 w-5" />
                       <span className="text-sm">Share</span>
                     </button>
@@ -329,6 +356,13 @@ export function PostsAndComments() {
                                   )}
                                 </div>
                                 <p className="text-sm text-foreground">{comment.content}</p>
+                                {/* Comment like button */}
+                                <button
+                                  onClick={() => handleToggleCommentLike(post.id, comment.id)}
+                                  className="flex items-center gap-1 mt-1.5 transition-colors hover:opacity-80">
+                                  <Heart className={`h-3.5 w-3.5 ${comment.is_liked ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+                                  <span className={`text-xs ${comment.is_liked ? "text-red-500" : "text-muted-foreground"}`}>{comment.like_count || 0}</span>
+                                </button>
                               </div>
                             </div>
                           ))}
@@ -423,6 +457,13 @@ export function PostsAndComments() {
             </div>
           </div>
         </Modal>
+
+        {/* Share toast */}
+        {shareToast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl bg-foreground text-background text-sm font-semibold shadow-xl animate-fade-in">
+            ✅ {shareToast}
+          </div>
+        )}
       </div>
     </MainLayout>
   );

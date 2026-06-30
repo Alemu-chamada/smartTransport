@@ -4,44 +4,62 @@ const { mapPost, mapComment } = require("../repositories/post.model.js");
 
 const getAllPosts = async (userId) => {
   const result = await db.query(
-    `SELECT p.*, u.full_name as author_name
+    `SELECT p.*, u.full_name as author_name,
+            COUNT(DISTINCT pl.id)::int  AS like_count,
+            BOOL_OR(pl.user_id = $1)    AS is_liked
      FROM posts p
      JOIN users u ON u.id = p.author_id
+     LEFT JOIN post_likes pl ON pl.post_id = p.id
      WHERE p.is_published = TRUE
-     ORDER BY p.created_at DESC`
+     GROUP BY p.id, u.full_name
+     ORDER BY p.created_at DESC`,
+    [userId]
   );
   return result.rows.map((row) => ({
     ...mapPost(row),
-    like_count: 0,
-    is_liked: false
+    like_count: row.like_count || 0,
+    is_liked: row.is_liked || false,
   }));
 };
 
 const getPostById = async (postId, userId) => {
   const result = await db.query(
-    `SELECT p.*, u.full_name as author_name
+    `SELECT p.*, u.full_name as author_name,
+            COUNT(DISTINCT pl.id)::int  AS like_count,
+            BOOL_OR(pl.user_id = $2)    AS is_liked
      FROM posts p
      JOIN users u ON u.id = p.author_id
-     WHERE p.id = $1`,
-    [postId]
+     LEFT JOIN post_likes pl ON pl.post_id = p.id
+     WHERE p.id = $1
+     GROUP BY p.id, u.full_name`,
+    [postId, userId]
   );
+  if (!result.rows[0]) return null;
   return {
     ...mapPost(result.rows[0]),
-    like_count: 0,
-    is_liked: false
+    like_count: result.rows[0].like_count || 0,
+    is_liked: result.rows[0].is_liked || false,
   };
 };
 
-const getCommentsByPostId = async (postId) => {
+const getCommentsByPostId = async (postId, userId) => {
   const result = await db.query(
-    `SELECT c.*, u.full_name as author_name
+    `SELECT c.*, u.full_name as author_name,
+            COUNT(DISTINCT cl.id)::int  AS like_count,
+            BOOL_OR(cl.user_id = $2)    AS is_liked
      FROM comments c
      JOIN users u ON u.id = c.author_id
+     LEFT JOIN comment_likes cl ON cl.comment_id = c.id
      WHERE c.post_id = $1
+     GROUP BY c.id, u.full_name
      ORDER BY c.created_at ASC`,
-    [postId]
+    [postId, userId || null]
   );
-  return result.rows.map(mapComment);
+  return result.rows.map((row) => ({
+    ...mapComment(row),
+    like_count: row.like_count || 0,
+    is_liked: row.is_liked || false,
+  }));
 };
 
 const createPost = async ({ userId, title, content }) => {
@@ -78,8 +96,44 @@ const createComment = async ({ userId, postId, content }) => {
 };
 
 const toggleLike = async ({ userId, postId }) => {
-  // Like functionality not supported in current schema
+  const existing = await db.query(
+    `SELECT id FROM post_likes WHERE post_id = $1 AND user_id = $2`,
+    [postId, userId]
+  );
+  if (existing.rows[0]) {
+    await db.query(`DELETE FROM post_likes WHERE post_id = $1 AND user_id = $2`, [postId, userId]);
+  } else {
+    await db.query(`INSERT INTO post_likes (post_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [postId, userId]);
+  }
   return getPostById(postId, userId);
+};
+
+const toggleCommentLike = async ({ userId, commentId }) => {
+  const existing = await db.query(
+    `SELECT id FROM comment_likes WHERE comment_id = $1 AND user_id = $2`,
+    [commentId, userId]
+  );
+  if (existing.rows[0]) {
+    await db.query(`DELETE FROM comment_likes WHERE comment_id = $1 AND user_id = $2`, [commentId, userId]);
+  } else {
+    await db.query(`INSERT INTO comment_likes (comment_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [commentId, userId]);
+  }
+  const result = await db.query(
+    `SELECT c.*, u.full_name as author_name,
+            COUNT(DISTINCT cl.id)::int AS like_count,
+            BOOL_OR(cl.user_id = $2)   AS is_liked
+     FROM comments c
+     JOIN users u ON u.id = c.author_id
+     LEFT JOIN comment_likes cl ON cl.comment_id = c.id
+     WHERE c.id = $1
+     GROUP BY c.id, u.full_name`,
+    [commentId, userId]
+  );
+  return {
+    ...mapComment(result.rows[0]),
+    like_count: result.rows[0]?.like_count || 0,
+    is_liked: result.rows[0]?.is_liked || false,
+  };
 };
 
 const deletePost = async ({ userId, role, postId }) => {
@@ -140,6 +194,6 @@ const editComment = async ({ userId, commentId, content }) => {
 
 module.exports = {
   getAllPosts, getPostById, getCommentsByPostId,
-  createPost, createComment, toggleLike,
+  createPost, createComment, toggleLike, toggleCommentLike,
   deletePost, editPost, deleteComment, editComment,
 };

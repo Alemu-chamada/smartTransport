@@ -14,5 +14,6 @@ router.delete("/:id", authMiddleware, postController.deletePost);
 router.patch("/:id", authMiddleware, postController.editPost);
 router.delete("/:id/comments/:commentId", authMiddleware, postController.deleteComment);
 router.patch("/:id/comments/:commentId", authMiddleware, postController.editComment);
+router.post("/:id/comments/:commentId/like", authMiddleware, postController.toggleCommentLike);
 
 module.exports = router;
