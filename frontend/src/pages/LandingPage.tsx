@@ -195,11 +195,11 @@ export function AuthFooter() {
   return (
     <footer className="py-12 mt-auto" style={{ backgroundColor: C.navy }}>
       <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
-        {/* Two-column grid: SmartTransport + Developer */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
+        {/* Two columns: SmartTransport left, Developer pushed right (not to edge) */}
+        <div className="flex flex-col md:flex-row md:justify-between gap-12 mb-10">
 
           {/* ── SmartTransport column ── */}
-          <div>
+          <div className="md:max-w-xs">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="h-10 w-10 rounded-xl flex items-center justify-center"
                 style={{ background: `linear-gradient(135deg, ${C.red}, #ff6a35)` }}>
@@ -222,36 +222,36 @@ export function AuthFooter() {
                 <div key={val} className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
                   <Icon className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
                   {href
-                    ? <a href={href} className="text-xs hover:text-white transition-colors">{val}</a>
-                    : <span className="text-xs">{val}</span>}
+                    ? <a href={href} className="text-xs hover:text-white transition-colors whitespace-nowrap">{val}</a>
+                    : <span className="text-xs whitespace-nowrap">{val}</span>}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── Developer column ── */}
-          <div>
+          {/* ── Developer column — pushed right, not flush to edge ── */}
+          <div className="md:mr-16 lg:mr-24 xl:mr-32 flex-shrink-0">
             <h4 className="font-bold text-sm mb-4 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>Developer</h4>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
                   style={{ background: `linear-gradient(135deg, ${C.purple}, #5a2a6a)` }}>AC</div>
                 <div>
-                  <p className="text-sm font-semibold text-white">Alemu Chamada</p>
-                  <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>Full-Stack Developer</p>
+                  <p className="text-sm font-semibold text-white whitespace-nowrap">Alemu Chamada</p>
+                  <p className="text-xs whitespace-nowrap" style={{ color: "rgba(255,255,255,0.4)" }}>Full-Stack Developer</p>
                 </div>
               </div>
               <div className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
                 <Mail className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
-                <a href="mailto:alemuchamada@gmail.com" className="text-xs hover:text-white transition-colors">alemuchamada@gmail.com</a>
+                <a href="mailto:alemuchamada@gmail.com" className="text-xs hover:text-white transition-colors whitespace-nowrap">alemuchamada@gmail.com</a>
               </div>
               <div className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
                 <Phone className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
-                <a href="tel:+251956047594" className="text-xs hover:text-white transition-colors">+251 95 604 7594</a>
+                <a href="tel:+251956047594" className="text-xs hover:text-white transition-colors whitespace-nowrap">+251 95 604 7594</a>
               </div>
               <div className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
                 <Map className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
-                <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">ASTU · Computer Science and Engineering</span>
+                <span className="text-xs whitespace-nowrap">ASTU · Computer Science and Engineering</span>
               </div>
               <div className="flex gap-2 pt-1">
                 {[
