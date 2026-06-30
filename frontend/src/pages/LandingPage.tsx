@@ -92,11 +92,11 @@ export function LandingFooter() {
             <p className="text-sm leading-relaxed mb-5" style={{ color: "rgba(255,255,255,0.55)" }}>
               Connecting people, simplifying transportation, and building smarter journeys every day.
             </p>
-            <div className="space-y-2 mb-5">
+            <div className="space-y-2">
               {[
-                { Icon: Mail, val: "smarttransportserv@gmail.com", href: "mailto:smarttransportserv@gmail.com" },
-                { Icon: Phone, val: "+251 99 273 8116", href: "tel:+251992738116" },
-                { Icon: Map, val: "ASTU · Addis Ababa, Ethiopia", href: undefined },
+                { Icon: Mail,  val: "smarttransportserv@gmail.com", href: "mailto:smarttransportserv@gmail.com" },
+                { Icon: Phone, val: "+251 96 694 2369",              href: "tel:+251966942369" },
+                { Icon: Map,   val: "Addis Ababa, Ethiopia",         href: undefined },
               ].map(({ Icon, val, href }) => (
                 <div key={val} className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
                   <Icon className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
@@ -104,16 +104,6 @@ export function LandingFooter() {
                     ? <a href={href} className="text-xs hover:text-white transition-colors">{val}</a>
                     : <span className="text-xs">{val}</span>}
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              {[Facebook, Linkedin, Twitter].map((Icon, i) => (
-                <a key={i} href="#" className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors"
-                  style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = C.red; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.5)"; }}>
-                  <Icon className="h-4 w-4" />
-                </a>
               ))}
             </div>
           </div>
@@ -139,6 +129,7 @@ export function LandingFooter() {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.4)" }}>Developer</h4>
             <div className="space-y-3">
+              {/* Avatar + name */}
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
                   style={{ background: `linear-gradient(135deg, ${C.purple}, #5a2a6a)` }}>AC</div>
@@ -147,20 +138,38 @@ export function LandingFooter() {
                   <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>Full-Stack Developer</p>
                 </div>
               </div>
-              {[
-                { Icon: Mail,     val: "alemuchamada@gmail.com",             href: "mailto:alemuchamada@gmail.com" },
-                { Icon: Phone,    val: "+251 95 604 7594",                   href: "tel:+251956047594" },
-                { Icon: Linkedin, val: "linkedin.com/in/alemu-chamada",      href: "https://linkedin.com/in/alemu-chamada" },
-                { Icon: Github,   val: "github.com/Alemu-chamada",           href: "https://github.com/Alemu-chamada" },
-                { Icon: Map,      val: "ASTU · CS & Engineering",            href: undefined },
-              ].map(({ Icon, val, href }) => (
-                <div key={val} className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  <Icon className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
-                  {href
-                    ? <a href={href} className="text-xs hover:text-white transition-colors break-all">{val}</a>
-                    : <span className="text-xs">{val}</span>}
-                </div>
-              ))}
+              {/* Email */}
+              <div className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
+                <Mail className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
+                <a href="mailto:alemuchamada@gmail.com" className="text-xs hover:text-white transition-colors">alemuchamada@gmail.com</a>
+              </div>
+              {/* Phone */}
+              <div className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
+                <Phone className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
+                <a href="tel:+251956047594" className="text-xs hover:text-white transition-colors">+251 95 604 7594</a>
+              </div>
+              {/* ASTU — one line, truncate if needed */}
+              <div className="flex items-center gap-2.5" style={{ color: "rgba(255,255,255,0.5)" }}>
+                <Map className="h-4 w-4 flex-shrink-0" style={{ color: C.green }} />
+                <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">ASTU · Computer Science and Engineering</span>
+              </div>
+              {/* Social icons row */}
+              <div className="flex gap-2 pt-1">
+                {[
+                  { Icon: Github,   href: "https://github.com/Alemu-chamada",           label: "GitHub"   },
+                  { Icon: Linkedin, href: "https://linkedin.com/in/alemu-chamada",       label: "LinkedIn" },
+                  { Icon: Twitter,  href: "https://x.com/Alemu_chamada",                label: "X"        },
+                ].map(({ Icon, href, label }) => (
+                  <a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                    aria-label={label}
+                    className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors"
+                    style={{ backgroundColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = C.red; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.5)"; }}>
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
