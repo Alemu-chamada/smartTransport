@@ -143,6 +143,7 @@ function extractCoordsFromMapsLink(url: string): { lat: string; lng: string } | 
 }
 
 export function NearbyServices() {
+  const { user } = useAuth();
   const isAdmin = user?.role === "system_admin";
 
   const [services, setServices] = useState<Service[]>([]);
