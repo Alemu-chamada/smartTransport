@@ -49,13 +49,12 @@ console.log('4. Paste each key-value pair above');
 console.log('5. Click "Save Changes"\n');
 
 console.log('-----------------------------------------------------------------------------');
-console.log('USAGE IN RAILWAY:');
+console.log('ADDITIONAL HELP:');
 console.log('-----------------------------------------------------------------------------');
-console.log('1. Go to Railway Dashboard → Your Project');
-console.log('2. Click "Variables" tab');
-console.log('3. Click "New Variable"');
-console.log('4. Paste each key-value pair above');
-console.log('5. Click "Add"\n');
+console.log('• Render Blueprint: If your repo has render.yaml, secrets with');
+console.log('  "generateValue: true" are auto-generated during blueprint apply.');
+console.log('• Vercel Frontend needs: VITE_API_URL=https://<render-backend-domain>/api/v1');
+console.log('  (remember to Redeploy Vercel after saving env vars — Vite bakes them at build time)\n');
 
 console.log('-----------------------------------------------------------------------------');
 console.log('SECURITY BEST PRACTICES:');

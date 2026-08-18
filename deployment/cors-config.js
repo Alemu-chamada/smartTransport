@@ -131,10 +131,10 @@ module.exports = {
  *    const { socketCorsOptions } = require('../../config/cors-config');
  *    const io = new Server(httpServer, { cors: socketCorsOptions });
  * 
- * 3. Environment Variables (Render/Railway):
+ * 3. Environment Variables (Render):
  * 
- *    FRONTEND_URL=https://tms.vercel.app
- *    ALLOWED_ORIGINS=https://tms.vercel.app,https://custom-domain.com
+ *    FRONTEND_URL=https://smart-transport.cyan.vercel.app
+ *    ALLOWED_ORIGINS=https://smart-transport.cyan.vercel.app,https://custom-domain.com
  * 
  * 4. For multiple domains:
  * 

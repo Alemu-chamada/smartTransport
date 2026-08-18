@@ -14,145 +14,132 @@ services:
     env: node
     region: oregon # Choose: oregon, frankfurt, singapore
     plan: starter # Options: free, starter, standard, pro
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
     healthCheckPath: /api/v1/health
     envVars:
       # Node Environment
       - key: NODE_ENV
         value: production
-      
-      - key: PORT
-        value: 5002
-      
+
+      # NOTE: Render auto-sets PORT; app defaults to 5002 if unset.
+      # Do NOT hardcode a PORT value here — Render overrides it anyway.
+
       # Database - Neon PostgreSQL
-      # Add these in Render Dashboard as they contain secrets
-      - key: PGHOST
+      # Option A: DATABASE_URL (RECOMMENDED — single Neon connection string)
+      - key: DATABASE_URL
         sync: false
-      
-      - key: PGPORT
-        value: 5432
-      
-      - key: PGDATABASE
-        sync: false
-      
-      - key: PGUSER
-        sync: false
-      
-      - key: PGPASSWORD
-        sync: false
-      
-      # Redis - Upstash
+
+      # Option B: Individual PostgreSQL variables (use only if NOT using DATABASE_URL)
+      # - key: PGHOST
+      #   sync: false
+      # - key: PGPORT
+      #   value: 5432
+      # - key: PGDATABASE
+      #   sync: false
+      # - key: PGUSER
+      #   sync: false
+      # - key: PGPASSWORD
+      #   sync: false
+
+      # Redis - Upstash (use TLS rediss:// URL from Upstash dashboard)
       - key: REDIS_URL
         sync: false
-      
-      # JWT Secrets (generate with: node deployment/generate-secrets.js)
+
+      # JWT Secrets (generate securely; Render can auto-generate)
       - key: JWT_SECRET
         sync: false
         generateValue: true
-      
+
       - key: JWT_REFRESH_SECRET
         sync: false
         generateValue: true
-      
+
       - key: JWT_EXPIRES_IN
         value: 1h
-      
+
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
-      
-      # Email Configuration
-      - key: EMAIL_USER
-        value: smartTransportserv@gmail.com
-      
-      - key: EMAIL_PASS
-        sync: false
-      
-      # OTP Configuration
-      - key: OTP_EXPIRES_IN_MINUTES
-        value: 5
-      
-      # Booking Configuration
-      - key: BOOKING_RESERVATION_MINUTES
-        value: 15
-      
-      # Payment Gateway (configure if applicable)
-      - key: PAYMENT_WEBHOOK_SECRET
-        sync: false
-      
-      - key: PAYMENT_SESSION_BASE_URL
-        value: https://payments.example.com
-      
-      # CORS - Update after Vercel deployment
-      - key: FRONTEND_URL
-        value: https://tms.vercel.app
-      
-      - key: ALLOWED_ORIGINS
-        value: https://tms.vercel.app
-      
-      # Logging
-      - key: LOG_LEVEL
-        value: info
-      
-      # Session Secret
+
+      # Session secret
       - key: SESSION_SECRET
         sync: false
         generateValue: true
 
+      # Email Configuration (Gmail SMTP)
+      - key: EMAIL_USER
+        value: smartTransportserv@gmail.com
+
+      - key: EMAIL_PASS
+        sync: false
+
+      # OTP Configuration
+      - key: OTP_EXPIRES_IN_MINUTES
+        value: 5
+
+      # Booking Configuration
+      - key: BOOKING_RESERVATION_MINUTES
+        value: 15
+
+      # Payment (currently uses internal mock provider)
+      - key: PAYMENT_WEBHOOK_SECRET
+        sync: false
+        generateValue: true
+
+      - key: PAYMENT_SESSION_BASE_URL
+        value: https://payments.example.test/checkout
+
+      # CORS — production Vercel frontend domain
+      - key: FRONTEND_URL
+        value: https://smart-transport.cyan.vercel.app
+
+      - key: ALLOWED_ORIGINS
+        value: https://smart-transport.cyan.vercel.app
+
 # =============================================================================
 # DEPLOYMENT INSTRUCTIONS
 # =============================================================================
-# 
+#
 # OPTION 1: Deploy from Dashboard
 # 1. Go to https://dashboard.render.com
-# 2. Click "New +" → "Blueprint"
+# 2. Click "New +" → "Blueprint" (or "Web Service" if not using blueprint)
 # 3. Connect your GitHub repository
-# 4. Render will detect this render.yaml file
-# 5. Fill in the secret environment variables:
-#    - PGHOST, PGDATABASE, PGUSER, PGPASSWORD (from Neon)
-#    - REDIS_URL (from Upstash)
-#    - JWT_SECRET, JWT_REFRESH_SECRET (generate with generate-secrets.js)
-#    - EMAIL_PASS (Gmail app password)
-#    - PAYMENT_WEBHOOK_SECRET (if using payments)
-# 6. Click "Apply"
-# 
-# OPTION 2: Deploy via CLI
-# 1. Install Render CLI: npm install -g @render/cli
-# 2. Login: render login
-# 3. Deploy: render up
-# 
-# OPTION 3: Deploy from Git (Recommended)
-# 1. Push this file to your GitHub repository
-# 2. Connect repository in Render Dashboard
-# 3. Render auto-detects and deploys
-# 4. Add secret environment variables in Render Dashboard
-# 
-# =============================================================================
-# POST-DEPLOYMENT
-# =============================================================================
-# 
-# After deployment:
-# 1. Note your backend URL: https://tms-backend.onrender.com
-# 2. Test health endpoint: curl https://tms-backend.onrender.com/api/v1/health
-# 3. Update FRONTEND_URL in Render after Vercel deployment
-# 4. Update VITE_API_URL in Vercel with your Render backend URL
+# 4. If using Web Service (not Blueprint):
+#    - Root Directory: backend
+#    - Build Command: npm install
+#    - Start Command: npm start
+#    - Health Check Path: /api/v1/health
+# 5. Fill in the secret environment variables (from below):
+#    - DATABASE_URL (from Neon dashboard, pooled connection string recommended)
+#    - REDIS_URL (from Upstash — rediss:// TLS endpoint)
+#    - JWT_SECRET, JWT_REFRESH_SECRET (Render can auto-generate these)
+#    - SESSION_SECRET (Render can auto-generate)
+#    - EMAIL_PASS (Gmail App Password — NOT your real Gmail password)
+#    - PAYMENT_WEBHOOK_SECRET (Render can auto-generate)
+# 6. Click "Apply" / "Create"
+#
+# POST-DEPLOYMENT CHECKLIST
+#
+# After Render deploys the backend:
+# 1. Copy your backend URL: https://<YOUR-SERVICE-NAME>.onrender.com
+# 2. Test the health endpoint:
+#    curl https://<YOUR-SERVICE-NAME>.onrender.com/api/v1/health
+#    You should see: {"success":true,"message":"Server is healthy",...}
+# 3. In the Vercel dashboard, set VITE_API_URL to:
+#    https://<YOUR-SERVICE-NAME>.onrender.com/api/v1
+# 4. Redeploy the Vercel frontend (environment variables are baked at build time)
 # 5. Test the full flow: registration → OTP → login → dashboard
-# 
+#
 # =============================================================================
 # SCALING & UPGRADES
 # =============================================================================
-# 
-# To upgrade your plan:
-# 1. Go to Render Dashboard → Your Service
-# 2. Click "Settings"
-# 3. Change "Instance Type" from Starter to Standard/Pro
-# 4. Adjust "Autoscaling" settings if needed
-# 
-# Recommended production settings:
-# - Plan: Standard or higher
+#
+# Production recommendations:
+# - Plan: Standard or higher (free/starter sleep after inactivity)
 # - Instances: 2+ for high availability
 # - Autoscaling: Min 2, Max 10 instances
-# - Health Check: Enabled
+# - Health Check: Enabled (/api/v1/health)
 # - Zero Downtime Deploy: Enabled
-# 
+#
 # =============================================================================

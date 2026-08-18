@@ -1,74 +1,145 @@
+# =============================================================================
+# Render Blueprint Configuration
+# Transportation Management System
+# =============================================================================
+# This file defines infrastructure-as-code for Render.com deployment
+# Place this file in the root of your repository
+# Render will automatically detect and use it
+# =============================================================================
+
 services:
+  # Backend Web Service
   - type: web
     name: tms-backend
-    runtime: node
-    region: oregon          # choose the region closest to your Neon database
+    env: node
+    region: oregon # Choose: oregon, frankfurt, singapore
+    plan: starter # Options: free, starter, standard, pro
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/v1/health
-    autoDeploy: true        # redeploy automatically on every push to main
-
     envVars:
+      # Node Environment
       - key: NODE_ENV
         value: production
 
-      - key: PORT
-        value: "5002"
+      # NOTE: Render auto-sets PORT; app defaults to 5002 if unset.
+      # Do NOT hardcode a PORT value here — Render overrides it anyway.
 
-      # ── Database (Neon) ─────────────────────────────────────────────────
+      # Database - Neon PostgreSQL
+      # Option A: DATABASE_URL (RECOMMENDED — single Neon connection string)
       - key: DATABASE_URL
-        sync: false         # set manually in Render dashboard (never committed)
-
-      - key: PGHOST
-        sync: false
-      - key: PGPORT
-        value: "5432"
-      - key: PGDATABASE
-        sync: false
-      - key: PGUSER
-        sync: false
-      - key: PGPASSWORD
         sync: false
 
-      # ── Redis (Upstash) ─────────────────────────────────────────────────
+      # Option B: Individual PostgreSQL variables (use only if NOT using DATABASE_URL)
+      # - key: PGHOST
+      #   sync: false
+      # - key: PGPORT
+      #   value: 5432
+      # - key: PGDATABASE
+      #   sync: false
+      # - key: PGUSER
+      #   sync: false
+      # - key: PGPASSWORD
+      #   sync: false
+
+      # Redis - Upstash (use TLS rediss:// URL from Upstash dashboard)
       - key: REDIS_URL
         sync: false
 
-      # ── JWT ─────────────────────────────────────────────────────────────
+      # JWT Secrets (generate securely; Render can auto-generate)
       - key: JWT_SECRET
-        generateValue: true # Render auto-generates a secure random value
-      - key: JWT_REFRESH_SECRET
+        sync: false
         generateValue: true
+
+      - key: JWT_REFRESH_SECRET
+        sync: false
+        generateValue: true
+
       - key: JWT_EXPIRES_IN
         value: 1h
+
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
 
-      # ── Session ─────────────────────────────────────────────────────────
+      # Session secret
       - key: SESSION_SECRET
+        sync: false
         generateValue: true
 
-      # ── Email (set manually in Render dashboard) ─────────────────────────
+      # Email Configuration (Gmail SMTP)
       - key: EMAIL_USER
-        sync: false
+        value: smartTransportserv@gmail.com
+
       - key: EMAIL_PASS
         sync: false
 
-      # ── CORS ─────────────────────────────────────────────────────────────
-      - key: FRONTEND_URL
-        sync: false         # set to your Vercel URL after deploying frontend
-      - key: ALLOWED_ORIGINS
-        sync: false
+      # OTP Configuration
+      - key: OTP_EXPIRES_IN_MINUTES
+        value: 5
 
-      # ── Payment ─────────────────────────────────────────────────────────
+      # Booking Configuration
+      - key: BOOKING_RESERVATION_MINUTES
+        value: 15
+
+      # Payment (currently uses internal mock provider)
       - key: PAYMENT_WEBHOOK_SECRET
+        sync: false
         generateValue: true
+
       - key: PAYMENT_SESSION_BASE_URL
         value: https://payments.example.test/checkout
 
-      # ── OTP / Booking ────────────────────────────────────────────────────
-      - key: OTP_EXPIRES_IN_MINUTES
-        value: "5"
-      - key: BOOKING_RESERVATION_MINUTES
-        value: "15"
+      # CORS — production Vercel frontend domain
+      - key: FRONTEND_URL
+        value: https://smart-transport.cyan.vercel.app
+
+      - key: ALLOWED_ORIGINS
+        value: https://smart-transport.cyan.vercel.app
+
+# =============================================================================
+# DEPLOYMENT INSTRUCTIONS
+# =============================================================================
+#
+# OPTION 1: Deploy from Dashboard
+# 1. Go to https://dashboard.render.com
+# 2. Click "New +" → "Blueprint" (or "Web Service" if not using blueprint)
+# 3. Connect your GitHub repository
+# 4. If using Web Service (not Blueprint):
+#    - Root Directory: backend
+#    - Build Command: npm install
+#    - Start Command: npm start
+#    - Health Check Path: /api/v1/health
+# 5. Fill in the secret environment variables (from below):
+#    - DATABASE_URL (from Neon dashboard, pooled connection string recommended)
+#    - REDIS_URL (from Upstash — rediss:// TLS endpoint)
+#    - JWT_SECRET, JWT_REFRESH_SECRET (Render can auto-generate these)
+#    - SESSION_SECRET (Render can auto-generate)
+#    - EMAIL_PASS (Gmail App Password — NOT your real Gmail password)
+#    - PAYMENT_WEBHOOK_SECRET (Render can auto-generate)
+# 6. Click "Apply" / "Create"
+#
+# POST-DEPLOYMENT CHECKLIST
+#
+# After Render deploys the backend:
+# 1. Copy your backend URL: https://<YOUR-SERVICE-NAME>.onrender.com
+# 2. Test the health endpoint:
+#    curl https://<YOUR-SERVICE-NAME>.onrender.com/api/v1/health
+#    You should see: {"success":true,"message":"Server is healthy",...}
+# 3. In the Vercel dashboard, set VITE_API_URL to:
+#    https://<YOUR-SERVICE-NAME>.onrender.com/api/v1
+# 4. Redeploy the Vercel frontend (environment variables are baked at build time)
+# 5. Test the full flow: registration → OTP → login → dashboard
+#
+# =============================================================================
+# SCALING & UPGRADES
+# =============================================================================
+#
+# Production recommendations:
+# - Plan: Standard or higher (free/starter sleep after inactivity)
+# - Instances: 2+ for high availability
+# - Autoscaling: Min 2, Max 10 instances
+# - Health Check: Enabled (/api/v1/health)
+# - Zero Downtime Deploy: Enabled
+#
+# =============================================================================

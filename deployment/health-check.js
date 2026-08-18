@@ -187,11 +187,7 @@ module.exports = {
  *    - Health Check Path: /health
  *    - Health Check Timeout: 30 seconds
  * 
- * 3. Configure in Railway:
- *    - Healthcheck Path: /health
- *    - Healthcheck Timeout: 30
- * 
- * 4. Test locally:
+ * 3. Test locally:
  * 
  *    curl http://localhost:5002/health
  *    curl http://localhost:5002/health/ready

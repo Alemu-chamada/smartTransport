@@ -46,7 +46,7 @@ const start = async () => {
     const server = http.createServer(app);
     initializeTrackingSocket(server);
 
-    server.listen(env.port, () => {
+    server.listen(env.port, "0.0.0.0", () => {
       logger.info(`Server is running on port ${env.port}`);
     });
 
@@ -64,7 +64,16 @@ const start = async () => {
     process.on("SIGINT",  () => shutdown("SIGINT"));
 
   } catch (error) {
-    logger.error(`Server failed to start: ${error.message}`);
+    logger.error(`Server failed to start: ${error.message || String(error)}`, {
+      stack: error.stack,
+      name: error.name,
+    });
+    if (process.env.NODE_ENV !== "production") {
+      console.error("\n❌  Full error for local debugging:");
+      console.error(error);
+      console.error("\n💡 HINT: If this is a database connection error, copy backend/.env.example");
+      console.error("   to backend/.env and fill in DATABASE_URL or PGHOST/PGPASSWORD.");
+    }
     process.exit(1);
   }
 };
