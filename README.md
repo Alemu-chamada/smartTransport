@@ -70,7 +70,7 @@ Built as a final-year Computer Science & Engineering project at **Addis Ababa Sc
 | Service | URL | Status |
 |---------|-----|--------|
 | 🎨 Frontend | [smart-transport.cyan.vercel.app](https://smart-transport.cyan.vercel.app) | ![Vercel](https://img.shields.io/badge/deployed-brightgreen?style=flat-square) |
-| ⚙️ Backend API | `https://https://smarttransport.onrender.com/api/v1/health` | ![Render](https://img.shields.io/badge/deploy-brightgreen?style=flat-square) |
+| ⚙️ Backend API | `https://smarttransport.onrender.com/api/v1/health` | ![Render](https://img.shields.io/badge/deploy-brightgreen?style=flat-square) |
 | 🗄️ Database | Neon PostgreSQL (serverless) | ![Neon](https://img.shields.io/badge/connected-brightgreen?style=flat-square) |
 | 🔴 Cache | Upstash Redis (TLS) | ![Upstash](https://img.shields.io/badge/connected-brightgreen?style=flat-square) |
 
