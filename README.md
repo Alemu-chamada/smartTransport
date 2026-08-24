@@ -11,7 +11,7 @@
 <br/>
 
 [![Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-smart--transport.cyan.vercel.app-FF4103?style=flat-square&logo=vercel&logoColor=white)](https://smart-transport.cyan.vercel.app)
-[![API](https://img.shields.io/badge/⚙️%20Backend%20API-Render-46E3B7?style=flat-square&logo=render&logoColor=white)](https://tms-backend.onrender.com/api/v1/health)
+[![API](https://img.shields.io/badge/⚙️%20Backend%20API-Render-46E3B7?style=flat-square&logo=render&logoColor=white)](https://smarttransport.onrender.com/api/v1/health)
 [![Database](https://img.shields.io/badge/🗄️%20Database-Neon%20PostgreSQL-00E699?style=flat-square&logo=postgresql&logoColor=white)](https://neon.tech)
 [![Redis](https://img.shields.io/badge/🔴%20Cache-Upstash%20Redis-DC382D?style=flat-square&logo=redis&logoColor=white)](https://upstash.com)
 [![License](https://img.shields.io/badge/📄%20License-MIT-22c55e?style=flat-square)](./LICENSE)
@@ -412,8 +412,8 @@ There are two options:
 4. In the **Environment** tab, add every variable from the backend env section (or use the [render.yaml blueprint](deployment/render.yaml))
 
 **After Render deploys:**
-- Note the backend URL, e.g. `https://tms-backend.onrender.com`
-- Verify: `curl https://tms-backend.onrender.com/api/v1/health` → JSON 200
+- Note the backend URL, e.g. `https://smarttransport.onrender.com`
+- Verify: `curl https://smarttransport.onrender.com/api/v1/health` → JSON 200
 - Use this domain to set `VITE_API_URL` on Vercel (see below)
 
 ### 4. Vercel Frontend
@@ -589,7 +589,7 @@ Typical broken requests seen in the wild:
 |---|---|
 | `POST https://smart-transport.cyan.vercel.app/auth/login` | `VITE_API_URL` is empty/unset → relative URL hits the Vercel frontend |
 | `POST https://smart-transport.cyan.vercel.app/api/v1/auth/login` | `VITE_API_URL` accidentally set to the Vercel frontend URL |
-| `POST https://railway.app/.../auth/login` | `VITE_API_URL` still points at old Railway deployment (now dead) |
+| `POST https://old-render-domain.onrender.com/.../auth/login` | `VITE_API_URL` still points at old/stale Render deployment (update to `https://smarttransport.onrender.com/api/v1`) |
 | `POST https://<render>/auth/login` (missing `/api/v1`) | `VITE_API_URL` value is missing the `/api/v1` suffix |
 
 ### Fix Checklist — 7 things to verify
